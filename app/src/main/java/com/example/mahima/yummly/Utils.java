@@ -2,7 +2,6 @@ package com.example.mahima.yummly;
 
 import android.content.Context;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -15,7 +14,6 @@ public final class Utils {
         switch (layoutType) {
             case VERTICAL_LINEAR_LAYOUT:
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
                 break;
         }
 
