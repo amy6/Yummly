@@ -25,9 +25,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.mahima.yummly.Constants.LOG_TAG;
+import static com.example.mahima.yummly.Constants.RECIPE_TYPE;
 import static com.example.mahima.yummly.Constants.VERTICAL_LINEAR_LAYOUT;
 
-public class MainActivity extends AppCompatActivity {
+public class RecipeListActivity extends AppCompatActivity {
 
     @BindView(R.id.recipe_recycler_view)
     RecyclerView recyclerView;
@@ -35,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
     TextView emptyTextView;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
-
-    private static final Type RECIPE_TYPE = new TypeToken<List<Recipe>>() {}.getType();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
         Utils.setUpRecyclerView(this, recyclerView, VERTICAL_LINEAR_LAYOUT);
 
-        Gson gson = new Gson();
-        try {
-            InputStream inputStream = getAssets().open("baking.json");
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-            JsonReader reader = new JsonReader(inputStreamReader);
-            List<Recipe> recipes = gson.fromJson(reader, RECIPE_TYPE);
-            Log.d(LOG_TAG, "Number of recipes parsed : " + recipes.size());
-            RecipeListAdapter adapter = new RecipeListAdapter(this, recipes);
-            recyclerView.setAdapter(adapter);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        RecipeListAdapter adapter = new RecipeListAdapter(this, Utils.getRecipes(this));
+        recyclerView.setAdapter(adapter);
+
     }
 }
