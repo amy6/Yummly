@@ -44,6 +44,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-rc1'
 
     implementation 'com.google.android.exoplayer:exoplayer-core:2.9.0'
-    implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.0'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.9.0'
 }

@@ -16,10 +16,10 @@ public class RecipeStepListActivity extends AppCompatActivity {
         if (getIntent() != null) {
             if (getIntent().hasExtra("recipe_id")) {
                 int id = getIntent().getIntExtra("recipe_id", 0);
+                Log.d(LOG_TAG, "Recipe id inside activity class : " + id);
                 Recipe recipe = Utils.getRecipeById(this, id);
                 Bundle args = new Bundle();
                 args.putParcelable("recipe", recipe);
-                Log.d(LOG_TAG, "Recipe id inside activity class : " + id);
                 RecipeStepListFragment recipeStepListFragment = RecipeStepListFragment.getNewInstance(args);
                 getSupportFragmentManager()
                         .beginTransaction()

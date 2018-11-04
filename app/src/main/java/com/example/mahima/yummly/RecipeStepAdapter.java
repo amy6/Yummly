@@ -1,7 +1,9 @@
 package com.example.mahima.yummly;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,14 +43,27 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Re
         return recipeSteps == null ? 0 : recipeSteps.size();
     }
 
-    public static class RecipeStepViewHolder extends RecyclerView.ViewHolder {
+    public class RecipeStepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        @BindView(R.id.recipe_step_card)
+        CardView cardView;
         @BindView(R.id.recipe_step_short_desc)
         TextView shortDesc;
 
         public RecipeStepViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            cardView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            RecipeStep recipeStep = recipeSteps.get(position);
+            Intent intent = new Intent(context, RecipeStepDetailActivity.class);
+            intent.putExtra("recipe_step", recipeStep);
+            context.startActivity(intent);
         }
     }
 }
