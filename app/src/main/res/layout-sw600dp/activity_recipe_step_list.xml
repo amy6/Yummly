@@ -3,11 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RecipeStepListFragment">
+    tools:context=".RecipeStepListActivity">
 
-    <include android:layout_width="200dp"
-        android:layout_height="match_parent"
-        layout="@layout/layout_recipe_list"/>
+    <FrameLayout
+        android:id="@+id/recipe_step_list_container"
+        android:layout_width="200dp"
+        android:layout_height="match_parent" />
+
+    <View android:background="#000000"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content" />
 
     <fragment
         android:id="@+id/recipe_step_detail_container"

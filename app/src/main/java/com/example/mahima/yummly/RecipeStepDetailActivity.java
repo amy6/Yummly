@@ -13,9 +13,8 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
         if (getIntent() != null) {
             if (getIntent().hasExtra("recipe_step")) {
                 RecipeStep recipeStep = getIntent().getParcelableExtra("recipe_step");
-                Bundle args = new Bundle();
-                args.putParcelable("recipe_step", recipeStep);
-                RecipeStepDetailFragment recipeStepDetailFragment = RecipeStepDetailFragment.getNewInstance(args);
+
+                RecipeStepDetailFragment recipeStepDetailFragment = RecipeStepDetailFragment.newInstance(recipeStep);
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.recipe_step_detail_container, recipeStepDetailFragment)

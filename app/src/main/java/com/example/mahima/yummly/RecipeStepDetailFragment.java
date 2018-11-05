@@ -50,8 +50,10 @@ public class RecipeStepDetailFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static RecipeStepDetailFragment getNewInstance(Bundle args) {
+    public static RecipeStepDetailFragment newInstance(RecipeStep recipeStep) {
         RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("recipe_step", recipeStep);
         fragment.setArguments(args);
         return fragment;
     }

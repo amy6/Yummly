@@ -1,6 +1,7 @@
 package com.example.mahima.yummly;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,24 +25,32 @@ import static com.example.mahima.yummly.Constants.VERTICAL_LINEAR_LAYOUT;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecipeStepListFragment extends Fragment {
+public class RecipeStepListFragment extends Fragment implements OnItemClickListener{
 
     @BindView(R.id.recipe_recycler_view)
     RecyclerView recyclerView;
 
     private List<RecipeStep> recipeSteps;
+    private OnItemClickListener onItemClickListener;
 
 
     public RecipeStepListFragment() {
         // Required empty public constructor
     }
 
-    public static RecipeStepListFragment getNewInstance(Bundle args) {
+    public static RecipeStepListFragment newInstance(Recipe recipe) {
         RecipeStepListFragment fragment = new RecipeStepListFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("recipe", recipe);
         fragment.setArguments(args);
         return fragment;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onItemClickListener = (OnItemClickListener) context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +75,12 @@ public class RecipeStepListFragment extends Fragment {
             Log.d(LOG_TAG, "Recipe steps count : " + recipeSteps.size());
         }
 
-        RecipeStepAdapter adapter = new RecipeStepAdapter(getContext(), recipeSteps);
+        RecipeStepAdapter adapter = new RecipeStepAdapter(getContext(), this, recipeSteps);
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        onItemClickListener.onItemClick(position);
     }
 }

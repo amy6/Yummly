@@ -19,9 +19,11 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Re
 
     private Context context;
     private List<RecipeStep> recipeSteps;
+    private OnItemClickListener onItemClickListener;
 
-    public RecipeStepAdapter(Context context, List<RecipeStep> recipeSteps) {
+    public RecipeStepAdapter(Context context, OnItemClickListener listener, List<RecipeStep> recipeSteps) {
         this.context = context;
+        onItemClickListener = listener;
         this.recipeSteps = recipeSteps;
     }
 
@@ -60,10 +62,7 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Re
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            RecipeStep recipeStep = recipeSteps.get(position);
-            Intent intent = new Intent(context, RecipeStepDetailActivity.class);
-            intent.putExtra("recipe_step", recipeStep);
-            context.startActivity(intent);
+            onItemClickListener.onItemClick(position);
         }
     }
 }
