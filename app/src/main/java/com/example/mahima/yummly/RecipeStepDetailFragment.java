@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class RecipeStepDetailFragment extends Fragment {
 
     @BindView(R.id.recipe_step_video)
     PlayerView playerView;
+    @Nullable
     @BindView(R.id.recipe_step_desc)
     TextView recipeStepDesc;
 
@@ -58,11 +60,23 @@ public class RecipeStepDetailFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            playWhenReady = savedInstanceState.getBoolean("play_when_ready");
+            currentWindow = savedInstanceState.getInt("current_window");
+            playbackPosition = savedInstanceState.getLong("playback_position");
+            Log.d(LOG_TAG, "Retrieving state of exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.d(LOG_TAG, "OnCreateView\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         return inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
     }
 
@@ -75,22 +89,29 @@ public class RecipeStepDetailFragment extends Fragment {
         if (getArguments() != null) {
             RecipeStep recipeStep = getArguments().getParcelable("recipe_step");
             if (recipeStep != null) {
-                recipeStepDesc.setText(recipeStep.getDescription());
+                if (recipeStepDesc != null) {
+                    recipeStepDesc.setText(recipeStep.getDescription());
+                }
                 uri = Uri.parse(recipeStep.getVideoURL());
             }
         }
+
+        Log.d(LOG_TAG, "OnViewCreated\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
     }
 
     private void initializePlayer() {
-        player = ExoPlayerFactory.newSimpleInstance(getContext(),
-                new DefaultRenderersFactory(getContext()),
-                new DefaultTrackSelector(),
-                new DefaultLoadControl());
+        if (player == null){
+            player = ExoPlayerFactory.newSimpleInstance(getContext(),
+                    new DefaultRenderersFactory(getContext()),
+                    new DefaultTrackSelector(),
+                    new DefaultLoadControl());
+        }
 
         playerView.setPlayer(player);
 
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource);
+        Log.d(LOG_TAG, "Initializing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
     }
@@ -105,6 +126,7 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(LOG_TAG, "Inside onstart\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         if (Util.SDK_INT > 23) {
             initializePlayer();
         }
@@ -115,7 +137,6 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        hideSystemUi();
         if (Util.SDK_INT <= 23 || player == null) {
             initializePlayer();
         }
@@ -137,23 +158,28 @@ public class RecipeStepDetailFragment extends Fragment {
         }
     }
 
-    @SuppressLint("InlinedApi")
-    private void hideSystemUi() {
-        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-    }
-
     private void releasePlayer() {
         if (player != null) {
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
+            Log.d(LOG_TAG, "Releasing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
             player.release();
             player = null;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (player != null) {
+            playbackPosition = player.getCurrentPosition();
+            currentWindow = player.getCurrentWindowIndex();
+            playWhenReady = player.getPlayWhenReady();
+            Log.d(LOG_TAG, "Saved instance state\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+            outState.putBoolean("play_when_ready", playWhenReady);
+            outState.putInt("current_window", currentWindow);
+            outState.putLong("playback_position", playbackPosition);
         }
     }
 }

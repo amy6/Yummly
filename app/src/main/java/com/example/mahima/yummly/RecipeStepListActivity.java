@@ -1,13 +1,11 @@
 package com.example.mahima.yummly;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -52,21 +50,34 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
 
         ButterKnife.bind(this);
 
-        isTwoPane = findViewById(R.id.recipe_step_detail_container) != null;
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
-        Log.d(LOG_TAG, "Is this a two pane ? " + isTwoPane);
+        if (savedInstanceState != null) {
+            playWhenReady = savedInstanceState.getBoolean("play_when_ready");
+            currentWindow = savedInstanceState.getInt("current_window");
+            playbackPosition = savedInstanceState.getLong("playback_position");
+        }
+
+        isTwoPane = findViewById(R.id.recipe_step_detail_container) != null;
 
         if (getIntent() != null) {
             if (getIntent().hasExtra("recipe_id")) {
                 int id = getIntent().getIntExtra("recipe_id", 0);
-
+                Log.d(LOG_TAG, "Inside get intent");
                 recipe = Utils.getRecipeById(this, id);
                 setTitle(recipe.getName());
-                RecipeStepListFragment recipeStepListFragment = RecipeStepListFragment.newInstance(recipe);
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.recipe_step_list_container, recipeStepListFragment)
-                        .commit();
+
+                if (getSupportFragmentManager().findFragmentById(R.id.recipe_step_list_container) == null) {
+                    RecipeStepListFragment recipeStepListFragment = RecipeStepListFragment.newInstance(recipe);
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.recipe_step_list_container, recipeStepListFragment)
+                            .commit();
+                }
+
             }
         }
     }
@@ -76,7 +87,9 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
         List<RecipeStep> recipeSteps = recipe.getSteps();
         RecipeStep recipeStep = recipeSteps.get(position);
         if (isTwoPane) {
-            recipeStepDesc.setText(recipeStep.getDescription());
+            if (recipeStepDesc != null) {
+                recipeStepDesc.setText(recipeStep.getDescription());
+            }
             Log.d(LOG_TAG, "Video url is :" + recipeStep.getVideoURL());
             uri = Uri.parse(recipeStep.getVideoURL());
             initializePlayer();
@@ -88,15 +101,21 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
     }
 
     private void initializePlayer() {
-        player = ExoPlayerFactory.newSimpleInstance(this,
-                new DefaultRenderersFactory(this),
-                new DefaultTrackSelector(),
-                new DefaultLoadControl());
 
-        playerView.setPlayer(player);
+        if (player == null) {
+            player = ExoPlayerFactory.newSimpleInstance(this,
+                    new DefaultRenderersFactory(this),
+                    new DefaultTrackSelector(),
+                    new DefaultLoadControl());
+        }
+
+        if (playerView != null) {
+            playerView.setPlayer(player);
+        }
 
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource);
+        Log.d(LOG_TAG, "Initializing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
     }
@@ -122,7 +141,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
     public void onResume() {
         super.onResume();
         if (isTwoPane) {
-            hideSystemUi();
             if (Util.SDK_INT <= 23 || player == null) {
                 initializePlayer();
             }
@@ -146,16 +164,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
         }
     }
 
-    @SuppressLint("InlinedApi")
-    private void hideSystemUi() {
-        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-    }
-
     private void releasePlayer() {
         if (isTwoPane && player != null) {
             playbackPosition = player.getCurrentPosition();
@@ -163,6 +171,22 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             playWhenReady = player.getPlayWhenReady();
             player.release();
             player = null;
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (isTwoPane) {
+            outState.putBoolean("play_when_ready", playWhenReady);
+            outState.putInt("current_window", currentWindow);
+            outState.putLong("playback_position", playbackPosition);
         }
     }
 }
