@@ -12,4 +12,5 @@ public final class Constants {
     public static final Type RECIPE_TYPE = new TypeToken<List<Recipe>>() {}.getType();
 
     public static final int VERTICAL_LINEAR_LAYOUT = 0;
+    public static final int HORIZONTAL_LINEAR_LAYOUT = 1;
 }

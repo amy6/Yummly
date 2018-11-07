@@ -32,6 +32,7 @@ public class RecipeStepListFragment extends Fragment implements OnItemClickListe
 
     private List<RecipeStep> recipeSteps;
     private OnItemClickListener onItemClickListener;
+    private List<RecipeIngredient> recipeIngredients;
 
 
     public RecipeStepListFragment() {
@@ -66,16 +67,18 @@ public class RecipeStepListFragment extends Fragment implements OnItemClickListe
         ButterKnife.bind(this, view);
         Utils.setUpRecyclerView(getContext(), recyclerView, VERTICAL_LINEAR_LAYOUT);
         recipeSteps = new ArrayList<>();
+        recipeIngredients = new ArrayList<>();
 
         if (getArguments() != null) {
             Recipe recipe = getArguments().getParcelable("recipe");
             if (recipe != null) {
                 recipeSteps = recipe.getSteps();
+                recipeIngredients = recipe.getIngredients();
             }
             Log.d(LOG_TAG, "Recipe steps count : " + recipeSteps.size());
         }
 
-        RecipeStepAdapter adapter = new RecipeStepAdapter(getContext(), this, recipeSteps);
+        RecipeStepAdapter adapter = new RecipeStepAdapter(getContext(), this, recipeSteps, recipeIngredients);
         recyclerView.setAdapter(adapter);
     }
 

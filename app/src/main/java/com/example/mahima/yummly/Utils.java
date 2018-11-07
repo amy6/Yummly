@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mahima.yummly.Constants.HORIZONTAL_LINEAR_LAYOUT;
 import static com.example.mahima.yummly.Constants.RECIPE_TYPE;
 import static com.example.mahima.yummly.Constants.VERTICAL_LINEAR_LAYOUT;
 
@@ -25,6 +26,9 @@ public final class Utils {
         switch (layoutType) {
             case VERTICAL_LINEAR_LAYOUT:
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                break;
+            case HORIZONTAL_LINEAR_LAYOUT:
+                recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                 break;
         }
 
