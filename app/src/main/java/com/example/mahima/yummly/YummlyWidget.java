@@ -3,6 +3,7 @@ package com.example.mahima.yummly;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.widget.RemoteViews;
 
 /**
@@ -13,10 +14,12 @@ public class YummlyWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        CharSequence widgetText = context.getString(R.string.appwidget_text);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.yummly_widget);
-        views.setTextViewText(R.id.appwidget_text, widgetText);
+        Intent intent = new Intent(context, YummlyRemoteViewsService.class);
+        views.setRemoteAdapter(R.id.appwidget_list_view, intent);
+
+        views.setEmptyView(R.id.appwidget_list_view, R.id.appwidget_empty_text);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

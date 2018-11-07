@@ -1,7 +1,10 @@
 package com.example.mahima.yummly;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +20,7 @@ import butterknife.ButterKnife;
 
 public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder> {
 
+    public static final String SHARED_PREFERENCES_FILE = "com.example.mahima.yummly" + ".recipe";
     private Context context;
     private List<Recipe> recipeList;
 
@@ -64,6 +68,16 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
             Intent intent = new Intent(context, RecipeStepListActivity.class);
             intent.putExtra("recipe_id", recipe.getId());
             context.startActivity(intent);
+
+            SharedPreferences sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES_FILE,
+                    Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor.putInt("recipe_id", recipe.getId());
+            editor.apply();
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, YummlyWidget.class));
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.appwidget_list_view);
         }
     }
 }
