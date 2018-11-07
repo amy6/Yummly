@@ -30,6 +30,8 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/yummly_widget_info" />
         </receiver>
+        <service android:name=".YummlyRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
 
 </manifest>
