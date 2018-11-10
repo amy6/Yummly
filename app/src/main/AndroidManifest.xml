@@ -21,7 +21,7 @@
         <activity android:name=".RecipeStepListActivity" />
         <activity android:name=".RecipeStepDetailActivity" />
 
-        <receiver android:name=".YummlyWidget">
+        <receiver android:name=".YummlyWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
