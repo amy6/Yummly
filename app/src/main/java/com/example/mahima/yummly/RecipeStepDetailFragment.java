@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -26,6 +27,8 @@ import com.google.android.exoplayer2.util.Util;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Optional;
 
 import static com.example.mahima.yummly.Constants.LOG_TAG;
 
@@ -40,22 +43,35 @@ public class RecipeStepDetailFragment extends Fragment {
     @Nullable
     @BindView(R.id.recipe_step_desc)
     TextView recipeStepDesc;
+    @Nullable
+    @BindView(R.id.prev_button)
+    Button prevButton;
+    @Nullable
+    @BindView(R.id.next_button)
+    Button nextButton;
 
     private boolean playWhenReady = true;
     private int currentWindow = 0;
     private long playbackPosition = 0;
     private Uri uri;
     private SimpleExoPlayer player;
+    private int count;
+    private int position;
+    private int id;
+    private RecipeStep recipeStep;
 
 
     public RecipeStepDetailFragment() {
         // Required empty public constructor
     }
 
-    public static RecipeStepDetailFragment newInstance(RecipeStep recipeStep) {
+    public static RecipeStepDetailFragment newInstance(int id, RecipeStep recipeStep, int position, int count) {
         RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
         Bundle args = new Bundle();
+        args.putInt("recipe_id", id);
         args.putParcelable("recipe_step", recipeStep);
+        args.putInt("recipe_step_position", position);
+        args.putInt("recipe_steps_count", count);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,7 +84,7 @@ public class RecipeStepDetailFragment extends Fragment {
             playWhenReady = savedInstanceState.getBoolean("play_when_ready");
             currentWindow = savedInstanceState.getInt("current_window");
             playbackPosition = savedInstanceState.getLong("playback_position");
-            Log.d(LOG_TAG, "Retrieving state of exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+//            Log.d(LOG_TAG, "Retrieving state of exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         }
     }
 
@@ -76,7 +92,7 @@ public class RecipeStepDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.d(LOG_TAG, "OnCreateView\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+//        Log.d(LOG_TAG, "OnCreateView\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         return inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
     }
 
@@ -87,19 +103,84 @@ public class RecipeStepDetailFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         if (getArguments() != null) {
-            RecipeStep recipeStep = getArguments().getParcelable("recipe_step");
-            if (recipeStep != null) {
-                if (recipeStepDesc != null) {
-                    recipeStepDesc.setText(recipeStep.getDescription());
+            id = getArguments().getInt("recipe_id");
+            recipeStep = getArguments().getParcelable("recipe_step");
+            count = getArguments().getInt("recipe_steps_count");
+            position = getArguments().getInt("recipe_step_position");
+            displayRecipeDetails();
+        }
+
+        if (savedInstanceState != null) {
+            id = savedInstanceState.getInt("recipe_id");
+            position = savedInstanceState.getInt("recipe_step_position");
+            Recipe recipe = Utils.getRecipeById(getContext(), id);
+            recipeStep = recipe.getSteps().get(position);
+            displayRecipeDetails();
+        }
+
+//        Log.d(LOG_TAG, "OnViewCreated\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+    }
+
+    private void displayRecipeDetails() {
+        if (recipeStep != null) {
+            if (recipeStepDesc != null) {
+                recipeStepDesc.setText(recipeStep.getDescription());
+            }
+            uri = Uri.parse(recipeStep.getVideoURL());
+        }
+        initializePlayer();
+    }
+
+    @Optional
+    @OnClick(R.id.prev_button)
+    public void displayPreviousStep() {
+        if (prevButton != null && nextButton != null) {
+            if (position > 0 && position < count) {
+                prevButton.setEnabled(true);
+                position--;
+                nextButton.setEnabled(true);
+                if (position <= 0) {
+                    prevButton.setEnabled(false);
                 }
-                uri = Uri.parse(recipeStep.getVideoURL());
+                Log.d(LOG_TAG, "Position : " + position);
+                Recipe recipe = Utils.getRecipeById(getContext(), id);
+                recipeStep = recipe.getSteps().get(position);
+                currentWindow = 0;
+                playbackPosition = 0;
+                displayRecipeDetails();
             }
         }
 
-        Log.d(LOG_TAG, "OnViewCreated\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+    }
+
+    @Optional
+    @OnClick(R.id.next_button)
+    public void displayNextStep() {
+        if (nextButton != null && prevButton != null) {
+            if (position >= 0 && position < count-1) {
+                nextButton.setEnabled(true);
+                position++;
+                prevButton.setEnabled(true);
+                if (position >= count-1) {
+                    nextButton.setEnabled(false);
+                }
+                Log.d(LOG_TAG, "Position : " + position);
+                Recipe recipe = Utils.getRecipeById(getContext(), id);
+                recipeStep = recipe.getSteps().get(position);
+                currentWindow = 0;
+                playbackPosition = 0;
+                displayRecipeDetails();
+            }
+        }
+
     }
 
     private void initializePlayer() {
+
+        if (getActivity() != null) {
+            getActivity().setTitle(recipeStep.getShortDescription());
+        }
+
         if (player == null){
             player = ExoPlayerFactory.newSimpleInstance(getContext(),
                     new DefaultRenderersFactory(getContext()),
@@ -111,7 +192,7 @@ public class RecipeStepDetailFragment extends Fragment {
 
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource);
-        Log.d(LOG_TAG, "Initializing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+//        Log.d(LOG_TAG, "Initializing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
     }
@@ -126,7 +207,7 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(LOG_TAG, "Inside onstart\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+//        Log.d(LOG_TAG, "Inside onstart\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         if (Util.SDK_INT > 23) {
             initializePlayer();
         }
@@ -163,7 +244,7 @@ public class RecipeStepDetailFragment extends Fragment {
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
-            Log.d(LOG_TAG, "Releasing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+//            Log.d(LOG_TAG, "Releasing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
             player.release();
             player = null;
         }
@@ -176,10 +257,12 @@ public class RecipeStepDetailFragment extends Fragment {
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
-            Log.d(LOG_TAG, "Saved instance state\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+//            Log.d(LOG_TAG, "Saved instance state\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
             outState.putBoolean("play_when_ready", playWhenReady);
             outState.putInt("current_window", currentWindow);
             outState.putLong("playback_position", playbackPosition);
+            outState.putInt("recipe_id", id);
+            outState.putInt("recipe_step_position", position);
         }
     }
 }

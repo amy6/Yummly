@@ -7,12 +7,4 @@
 
     <include layout="@layout/layout_recipe_list"/>
 
-    <TextView
-        android:id="@+id/mobile_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:text="Mobile devices"/>
-
 </FrameLayout>

@@ -42,6 +42,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
     private boolean playWhenReady = true;
     private int currentWindow = 0;
     private long playbackPosition = 0;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
 
         if (getIntent() != null) {
             if (getIntent().hasExtra("recipe_id")) {
-                int id = getIntent().getIntExtra("recipe_id", 0);
+                id = getIntent().getIntExtra("recipe_id", 0);
                 Log.d(LOG_TAG, "Inside get intent");
                 recipe = Utils.getRecipeById(this, id);
                 setTitle(recipe.getName());
@@ -85,6 +86,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
     @Override
     public void onItemClick(int position) {
         List<RecipeStep> recipeSteps = recipe.getSteps();
+        int count = recipeSteps.size();
         RecipeStep recipeStep = recipeSteps.get(position);
         if (isTwoPane) {
             if (recipeStepDesc != null) {
@@ -95,7 +97,10 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             initializePlayer();
         } else {
             Intent intent = new Intent(this, RecipeStepDetailActivity.class);
+            intent.putExtra("recipe_id", id);
             intent.putExtra("recipe_step", recipeStep);
+            intent.putExtra("recipe_steps_count", count);
+            intent.putExtra("recipe_step_position", position);
             startActivity(intent);
         }
     }
