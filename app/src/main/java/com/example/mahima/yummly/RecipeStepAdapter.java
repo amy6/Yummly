@@ -27,12 +27,15 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
     private List<RecipeStep> recipeSteps;
     private List<RecipeIngredient> ingredients;
     private OnItemClickListener onItemClickListener;
+    private boolean isTwoPane;
+    private int selectedPosition = 1;
 
-    public RecipeStepAdapter(Context context, OnItemClickListener listener, List<RecipeStep> recipeSteps, List<RecipeIngredient> recipeIngredients) {
+    public RecipeStepAdapter(Context context, OnItemClickListener listener, List<RecipeStep> recipeSteps, List<RecipeIngredient> recipeIngredients, boolean isTwoPane) {
         this.context = context;
         onItemClickListener = listener;
         this.recipeSteps = recipeSteps;
         ingredients = recipeIngredients;
+        this.isTwoPane = isTwoPane;
     }
 
     @NonNull
@@ -69,6 +72,14 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
                         (RecipeStepViewHolder) viewHolder;
                 recipeStepViewHolder.shortDesc.setText(recipeStep.getShortDescription());
                 Log.d(LOG_TAG, "Position " + i + " desc : " + recipeStep.getShortDescription());
+
+                if (isTwoPane) {
+                    if (selectedPosition == i) {
+                        recipeStepViewHolder.itemView.setSelected(true);
+                    } else {
+                        recipeStepViewHolder.itemView.setSelected(false);
+                    }
+                }
                 break;
         }
 
@@ -106,6 +117,8 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
         public void onClick(View v) {
             int position = getAdapterPosition() - 1;
             onItemClickListener.onItemClick(position);
+            selectedPosition = getAdapterPosition();
+            notifyDataSetChanged();
         }
     }
 

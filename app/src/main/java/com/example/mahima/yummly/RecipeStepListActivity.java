@@ -82,16 +82,17 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
                 recipe = Utils.getRecipeById(this, id);
                 setTitle(recipe.getName());
 
+                recipeSteps = recipe.getSteps();
+                count = recipeSteps.size();
+
                 if (isTwoPane) {
-                    recipeSteps = recipe.getSteps();
-                    count = recipeSteps.size();
                     recipeStep = recipeSteps.get(currentPosition);
                     uri = Uri.parse(recipeStep.getVideoURL());
                     initializePlayer();
                 }
 
                 if (getSupportFragmentManager().findFragmentById(R.id.recipe_step_list_container) == null) {
-                    RecipeStepListFragment recipeStepListFragment = RecipeStepListFragment.newInstance(recipe);
+                    RecipeStepListFragment recipeStepListFragment = RecipeStepListFragment.newInstance(recipe, isTwoPane);
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.recipe_step_list_container, recipeStepListFragment)
@@ -101,7 +102,9 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             }
         }
 
-        player.addListener(this);
+        if (player != null) {
+            player.addListener(this);
+        }
     }
 
     @Override

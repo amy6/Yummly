@@ -39,10 +39,11 @@ public class RecipeStepListFragment extends Fragment implements OnItemClickListe
         // Required empty public constructor
     }
 
-    public static RecipeStepListFragment newInstance(Recipe recipe) {
+    public static RecipeStepListFragment newInstance(Recipe recipe, boolean isTwoPane) {
         RecipeStepListFragment fragment = new RecipeStepListFragment();
         Bundle args = new Bundle();
         args.putParcelable("recipe", recipe);
+        args.putBoolean("is_two_pane", isTwoPane);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,6 +70,7 @@ public class RecipeStepListFragment extends Fragment implements OnItemClickListe
         recipeSteps = new ArrayList<>();
         recipeIngredients = new ArrayList<>();
 
+        boolean isTwoPane = false;
         if (getArguments() != null) {
             Recipe recipe = getArguments().getParcelable("recipe");
             if (recipe != null) {
@@ -76,9 +78,10 @@ public class RecipeStepListFragment extends Fragment implements OnItemClickListe
                 recipeIngredients = recipe.getIngredients();
             }
             Log.d(LOG_TAG, "Recipe steps count : " + recipeSteps.size());
+            isTwoPane = getArguments().getBoolean("is_two_pane");
         }
 
-        RecipeStepAdapter adapter = new RecipeStepAdapter(getContext(), this, recipeSteps, recipeIngredients);
+        RecipeStepAdapter adapter = new RecipeStepAdapter(getContext(), this, recipeSteps, recipeIngredients, isTwoPane);
         recyclerView.setAdapter(adapter);
     }
 
