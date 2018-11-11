@@ -1,17 +1,18 @@
 package com.example.mahima.yummly;
 
 
-import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -49,6 +50,8 @@ public class RecipeStepDetailFragment extends Fragment {
     @Nullable
     @BindView(R.id.next_button)
     Button nextButton;
+    @BindView(R.id.empty_image_view)
+    ImageView emptyImageView;
 
     private boolean playWhenReady = true;
     private int currentWindow = 0;
@@ -84,7 +87,6 @@ public class RecipeStepDetailFragment extends Fragment {
             playWhenReady = savedInstanceState.getBoolean("play_when_ready");
             currentWindow = savedInstanceState.getInt("current_window");
             playbackPosition = savedInstanceState.getLong("playback_position");
-//            Log.d(LOG_TAG, "Retrieving state of exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         }
     }
 
@@ -92,7 +94,6 @@ public class RecipeStepDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-//        Log.d(LOG_TAG, "OnCreateView\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         return inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
     }
 
@@ -121,7 +122,6 @@ public class RecipeStepDetailFragment extends Fragment {
             displayRecipeDetails();
         }
 
-//        Log.d(LOG_TAG, "OnViewCreated\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
     }
 
     private void displayRecipeDetails() {
@@ -129,6 +129,20 @@ public class RecipeStepDetailFragment extends Fragment {
             if (recipeStepDesc != null) {
                 recipeStepDesc.setText(recipeStep.getDescription());
             }
+
+            if (recipeStep.getVideoURL() == null || TextUtils.isEmpty(recipeStep.getVideoURL())) {
+                playerView.setVisibility(View.GONE);
+                emptyImageView.setVisibility(View.VISIBLE);
+                if (recipeStep.getThumbnailURL() != null &&
+                        !TextUtils.isEmpty(recipeStep.getThumbnailURL()) &&
+                        !recipeStep.getThumbnailURL().contains(".mp4")) {
+                    emptyImageView.setImageURI(Uri.parse(recipeStep.getThumbnailURL()));
+                }
+            } else {
+                playerView.setVisibility(View.VISIBLE);
+                emptyImageView.setVisibility(View.GONE);
+            }
+
             uri = Uri.parse(recipeStep.getVideoURL());
         }
         initializePlayer();
@@ -180,7 +194,7 @@ public class RecipeStepDetailFragment extends Fragment {
 
     private void initializePlayer() {
 
-        if (getActivity() != null && playerView == null) {
+        if (getActivity() != null) {
             getActivity().setTitle(recipeStep.getShortDescription());
         }
 
@@ -195,7 +209,6 @@ public class RecipeStepDetailFragment extends Fragment {
 
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource);
-//        Log.d(LOG_TAG, "Initializing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
     }
@@ -210,7 +223,6 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-//        Log.d(LOG_TAG, "Inside onstart\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         if (Util.SDK_INT > 23) {
             initializePlayer();
         }
@@ -247,7 +259,6 @@ public class RecipeStepDetailFragment extends Fragment {
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
-//            Log.d(LOG_TAG, "Releasing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
             player.release();
             player = null;
         }
@@ -260,7 +271,6 @@ public class RecipeStepDetailFragment extends Fragment {
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
-//            Log.d(LOG_TAG, "Saved instance state\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
             outState.putBoolean("play_when_ready", playWhenReady);
             outState.putInt("current_window", currentWindow);
             outState.putLong("playback_position", playbackPosition);
