@@ -53,6 +53,9 @@ public class RecipeStepDetailFragment extends Fragment {
     Button nextButton;
     @BindView(R.id.empty_image_view)
     ImageView emptyImageView;
+    @Nullable
+    @BindView(R.id.recipe_step_count)
+    TextView recipeStepCount;
 
     private boolean playWhenReady = true;
     private int currentWindow = 0;
@@ -129,6 +132,11 @@ public class RecipeStepDetailFragment extends Fragment {
         if (recipeStep != null) {
             if (recipeStepDesc != null) {
                 recipeStepDesc.setText(recipeStep.getDescription());
+                if (position == 0) {
+                    recipeStepCount.setText(R.string.recipe_introduction);
+                } else {
+                    recipeStepCount.setText(getString(R.string.recipe_step_count, position, count));
+                }
             }
 
             if (recipeStep.getVideoURL() == null || TextUtils.isEmpty(recipeStep.getVideoURL())) {
