@@ -113,8 +113,11 @@ public class RecipeStepDetailFragment extends Fragment {
         if (savedInstanceState != null) {
             id = savedInstanceState.getInt("recipe_id");
             position = savedInstanceState.getInt("recipe_step_position");
-            Recipe recipe = Utils.getRecipeById(getContext(), id);
-            recipeStep = recipe.getSteps().get(position);
+            if (playerView == null) {
+                Recipe recipe = Utils.getRecipeById(getContext(), id);
+                recipeStep = recipe.getSteps().get(position);
+            }
+
             displayRecipeDetails();
         }
 
@@ -177,7 +180,7 @@ public class RecipeStepDetailFragment extends Fragment {
 
     private void initializePlayer() {
 
-        if (getActivity() != null) {
+        if (getActivity() != null && playerView == null) {
             getActivity().setTitle(recipeStep.getShortDescription());
         }
 

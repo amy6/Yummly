@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -19,6 +20,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -26,7 +28,7 @@ import butterknife.ButterKnife;
 
 import static com.example.mahima.yummly.Constants.LOG_TAG;
 
-public class RecipeStepListActivity extends AppCompatActivity implements OnItemClickListener{
+public class RecipeStepListActivity extends AppCompatActivity implements OnItemClickListener, Player.EventListener {
 
     @Nullable
     @BindView(R.id.recipe_step_video)
@@ -43,6 +45,10 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
     private int currentWindow = 0;
     private long playbackPosition = 0;
     private int id;
+    private int count;
+    private RecipeStep recipeStep;
+    private List<RecipeStep> recipeSteps;
+    private int currentPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,8 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
         setContentView(R.layout.activity_recipe_step_list);
 
         ButterKnife.bind(this);
+
+        recipeSteps = new ArrayList<>();
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -60,6 +68,9 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             playWhenReady = savedInstanceState.getBoolean("play_when_ready");
             currentWindow = savedInstanceState.getInt("current_window");
             playbackPosition = savedInstanceState.getLong("playback_position");
+            currentPosition = savedInstanceState.getInt("recipe_step_position");
+            Log.d(LOG_TAG, "TwoPane Restoring exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+            Log.d(LOG_TAG, "TwoPane Restoring steps position:::\t\t" + currentPosition);
         }
 
         isTwoPane = findViewById(R.id.recipe_step_detail_container) != null;
@@ -71,6 +82,14 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
                 recipe = Utils.getRecipeById(this, id);
                 setTitle(recipe.getName());
 
+                if (isTwoPane) {
+                    recipeSteps = recipe.getSteps();
+                    count = recipeSteps.size();
+                    recipeStep = recipeSteps.get(currentPosition);
+                    uri = Uri.parse(recipeStep.getVideoURL());
+                    initializePlayer();
+                }
+
                 if (getSupportFragmentManager().findFragmentById(R.id.recipe_step_list_container) == null) {
                     RecipeStepListFragment recipeStepListFragment = RecipeStepListFragment.newInstance(recipe);
                     getSupportFragmentManager()
@@ -81,13 +100,16 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
 
             }
         }
+
+        player.addListener(this);
     }
 
     @Override
     public void onItemClick(int position) {
-        List<RecipeStep> recipeSteps = recipe.getSteps();
-        int count = recipeSteps.size();
-        RecipeStep recipeStep = recipeSteps.get(position);
+        currentWindow = 0;
+        playbackPosition = 0;
+        currentPosition = position;
+        recipeStep = recipeSteps.get(currentPosition);
         if (isTwoPane) {
             if (recipeStepDesc != null) {
                 recipeStepDesc.setText(recipeStep.getDescription());
@@ -120,7 +142,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
 
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource);
-        Log.d(LOG_TAG, "Initializing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+        Log.d(LOG_TAG, "TwoPane Initializing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
     }
@@ -174,6 +196,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
+            Log.d(LOG_TAG, "TwoPane Releasing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
             player.release();
             player = null;
         }
@@ -189,9 +212,20 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (isTwoPane) {
+            playbackPosition = player.getCurrentPosition();
+            currentWindow = player.getCurrentWindowIndex();
+            playWhenReady = player.getPlayWhenReady();
             outState.putBoolean("play_when_ready", playWhenReady);
             outState.putInt("current_window", currentWindow);
             outState.putLong("playback_position", playbackPosition);
+            outState.putInt("recipe_step_position", currentPosition);
+            Log.d(LOG_TAG, "TwoPane Saving exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
+            Log.d(LOG_TAG, "TwoPane Saving steps position:::\t\t" + currentPosition);
         }
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        this.playWhenReady = playWhenReady;
     }
 }
