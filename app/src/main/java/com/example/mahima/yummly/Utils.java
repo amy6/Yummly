@@ -1,6 +1,7 @@
 package com.example.mahima.yummly;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -60,22 +61,15 @@ public final class Utils {
         return getRecipes(context).get(id-1);
     }
 
-    public static Bitmap getVideoFrameFromVideo(String videoURL) throws Throwable {
-        Bitmap bitmap;
-        MediaMetadataRetriever mediaMetadataRetriever = null;
-        try {
-            mediaMetadataRetriever = new MediaMetadataRetriever();
-            mediaMetadataRetriever.setDataSource(videoURL, new HashMap<>());
-            bitmap = mediaMetadataRetriever.getFrameAtTime();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Throwable("Exception in retrieveVideoFrameFromVideo(String videoPath)" + e.getMessage());
-
-        } finally {
-            if (mediaMetadataRetriever != null) {
-                mediaMetadataRetriever.release();
-            }
+    public static int[] getRecipeImages(Context context) {
+        TypedArray typedArray = context.getResources().obtainTypedArray(R.array.recipe_image_ids);
+        int count = typedArray.length();
+        int[] ids = new int[count];
+        for (int i = 0; i < count; i++) {
+            ids[i] = typedArray.getResourceId(i, 0);
         }
-        return bitmap;
+        typedArray.recycle();
+
+        return ids;
     }
 }

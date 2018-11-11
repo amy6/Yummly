@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -137,6 +138,13 @@ public class RecipeStepDetailFragment extends Fragment {
                         !TextUtils.isEmpty(recipeStep.getThumbnailURL()) &&
                         !recipeStep.getThumbnailURL().contains(".mp4")) {
                     emptyImageView.setImageURI(Uri.parse(recipeStep.getThumbnailURL()));
+                } else {
+                    if (getContext() != null) {
+                        int[] imageIds = Utils.getRecipeImages(getContext());
+                        Glide.with(getContext())
+                                .load(imageIds[id - 1])
+                                .into(emptyImageView);
+                    }
                 }
             } else {
                 playerView.setVisibility(View.VISIBLE);

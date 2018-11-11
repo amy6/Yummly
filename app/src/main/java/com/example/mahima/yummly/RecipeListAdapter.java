@@ -5,14 +5,21 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,12 +28,14 @@ import butterknife.ButterKnife;
 public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder> {
 
     public static final String SHARED_PREFERENCES_FILE = "com.example.mahima.yummly" + ".recipe";
+    private int[] imageIds;
     private Context context;
     private List<Recipe> recipeList;
 
     public RecipeListAdapter(Context context, List<Recipe> recipeList) {
         this.context = context;
         this.recipeList = recipeList;
+        this.imageIds = Utils.getRecipeImages(context);
     }
 
     @NonNull
@@ -40,6 +49,9 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
     public void onBindViewHolder(@NonNull RecipeViewHolder recipeViewHolder, int i) {
         Recipe recipe = recipeList.get(i);
         recipeViewHolder.recipeName.setText(recipe.getName());
+        Glide.with(context)
+                .load(imageIds[i])
+                .into(recipeViewHolder.recipeImage);
     }
 
     @Override
@@ -53,6 +65,8 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
         CardView cardView;
         @BindView(R.id.recipe_name)
         TextView recipeName;
+        @BindView(R.id.recipe_card_image)
+        ImageView recipeImage;
 
         public RecipeViewHolder(@NonNull View itemView) {
             super(itemView);
