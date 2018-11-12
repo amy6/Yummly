@@ -62,7 +62,6 @@
             android:id="@+id/prev_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:enabled="false"
             android:src="@drawable/ic_keyboard_arrow_left"
             android:background="@drawable/background_circular"
             android:contentDescription="@string/no_description_available" />

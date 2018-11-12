@@ -38,8 +38,12 @@ public final class Utils {
             case HORIZONTAL_LINEAR_LAYOUT:
                 recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                 break;
+            case GRID_LAYOUT:
+                recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+                break;
             case STAGGERRED_GRID_LAYOUT:
                 recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+                break;
         }
 
         recyclerView.setHasFixedSize(true);
@@ -88,6 +92,9 @@ public final class Utils {
             case "TSP":
             case "TBLSP":
                 imageId = R.drawable.ic_spoon;
+                break;
+            case "UNIT":
+                imageId = R.drawable.ic_counter;
                 break;
             default:
                 imageId = R.drawable.ic_scale;

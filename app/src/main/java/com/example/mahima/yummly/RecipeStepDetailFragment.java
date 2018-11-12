@@ -132,6 +132,16 @@ public class RecipeStepDetailFragment extends Fragment {
     }
 
     private void displayRecipeDetails() {
+
+        if (position == count - 1 && nextButton != null) {
+            nextButton.setEnabled(false);
+            DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+        }
+        if (position == 0 && prevButton != null) {
+            prevButton.setEnabled(false);
+            DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+        }
+
         if (recipeStep != null) {
             if (recipeStepDesc != null) {
                 recipeStepDesc.setText(recipeStep.getDescription());

@@ -23,8 +23,9 @@ import static com.example.mahima.yummly.Constants.STAGGERRED_GRID_LAYOUT;
 
 public class RecipeStepAdapter extends RecyclerView.Adapter {
 
-    private static final int RECIPE_INGREDIENTS_VIEW = 0;
-    private static final int RECIPE_STEPS_VIEW = 1;
+    private static final int RECIPE_HEADER_TEXT_VIEW = 0;
+    private static final int RECIPE_INGREDIENTS_VIEW = 1;
+    private static final int RECIPE_STEPS_VIEW = 2;
 
     private Context context;
     private List<RecipeStep> recipeSteps;
@@ -46,6 +47,10 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         RecyclerView.ViewHolder viewHolder = null;
         switch (i) {
+            case RECIPE_HEADER_TEXT_VIEW:
+                viewHolder = new RecipeHeaderTextViewHolder(LayoutInflater.from(context)
+                .inflate(android.R.layout.simple_list_item_1, viewGroup, false));
+                break;
             case RECIPE_INGREDIENTS_VIEW:
                 viewHolder = new RecipeIngredientViewHolder(LayoutInflater.from(context)
                         .inflate(R.layout.layout_recipe_list, viewGroup, false));
@@ -61,6 +66,20 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         switch (getItemViewType(i)) {
+            case RECIPE_HEADER_TEXT_VIEW:
+                RecipeHeaderTextViewHolder recipeHeaderTextViewHolder =
+                        (RecipeHeaderTextViewHolder) viewHolder;
+                recipeHeaderTextViewHolder.headerText.setGravity(Gravity.CENTER);
+                recipeHeaderTextViewHolder.headerText.setAllCaps(true);
+                recipeHeaderTextViewHolder.headerText.setTypeface(null, Typeface.BOLD);
+                if (i == 0) {
+                    recipeHeaderTextViewHolder.headerText.setText(R.string.ingredients);
+                }
+                if (i == 2) {
+                    recipeHeaderTextViewHolder.headerText.setText(R.string.steps);
+                }
+                break;
+
             case RECIPE_INGREDIENTS_VIEW:
                 RecipeIngredientViewHolder recipeIngredientViewHolder =
                         (RecipeIngredientViewHolder) viewHolder;
@@ -69,8 +88,9 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
                 RecipeIngredientAdapter adapter = new RecipeIngredientAdapter(context, ingredients);
                 recipeIngredientViewHolder.recyclerView.setAdapter(adapter);
                 break;
+
             case RECIPE_STEPS_VIEW:
-                RecipeStep recipeStep = recipeSteps.get(i - 1);
+                RecipeStep recipeStep = recipeSteps.get(i - 3);
                 RecipeStepViewHolder recipeStepViewHolder =
                         (RecipeStepViewHolder) viewHolder;
                 recipeStepViewHolder.shortDesc.setText(recipeStep.getShortDescription());
@@ -98,15 +118,30 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return recipeSteps == null ? 0 : recipeSteps.size() + 1;
+        return recipeSteps == null ? 0 : recipeSteps.size() + 3;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
-            return RECIPE_INGREDIENTS_VIEW;
-        } else {
-            return RECIPE_STEPS_VIEW;
+        switch (position) {
+            case 0:
+            case 2:
+                return RECIPE_HEADER_TEXT_VIEW;
+            case 1:
+                return RECIPE_INGREDIENTS_VIEW;
+            default:
+                return RECIPE_STEPS_VIEW;
+        }
+    }
+
+    public class RecipeHeaderTextViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(android.R.id.text1)
+        TextView headerText;
+
+        public RecipeHeaderTextViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
@@ -134,7 +169,7 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
             switch (v.getId()) {
                 case R.id.recipe_step_layout:
                 case R.id.play_button:
-                    int position = getAdapterPosition() - 1;
+                    int position = getAdapterPosition() - 3;
                     onItemClickListener.onItemClick(position);
                     selectedPosition = getAdapterPosition();
                     notifyDataSetChanged();

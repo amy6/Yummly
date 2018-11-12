@@ -8,5 +8,7 @@
     <string name="recipe_introduction">Introduction</string>
     <string name="recipe_ingredients">Recipe Ingredients</string>
     <string name="recipe_servings">Servings: %1$d</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="steps">Steps</string>
 
 </resources>
