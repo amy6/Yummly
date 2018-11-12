@@ -9,6 +9,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.mahima.yummly.Constants.GRID_LAYOUT;
 import static com.example.mahima.yummly.Constants.VERTICAL_LINEAR_LAYOUT;
 
 public class RecipeListActivity extends AppCompatActivity {
@@ -27,7 +28,11 @@ public class RecipeListActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        Utils.setUpRecyclerView(this, recyclerView, VERTICAL_LINEAR_LAYOUT);
+        if (Utils.isTablet(this) || Utils.isInLandscape(this)) {
+            Utils.setUpRecyclerView(this, recyclerView, GRID_LAYOUT);
+        } else {
+            Utils.setUpRecyclerView(this, recyclerView, VERTICAL_LINEAR_LAYOUT);
+        }
 
         RecipeListAdapter adapter = new RecipeListAdapter(this, Utils.getRecipes(this));
         recyclerView.setAdapter(adapter);

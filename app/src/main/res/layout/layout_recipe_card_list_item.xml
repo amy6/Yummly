@@ -52,10 +52,9 @@
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:text="@string/recipe_servings"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/recipe_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/recipe_name"
-            app:layout_constraintVertical_bias="0.0"
             tools:text="Servings: 6" />
 
     </android.support.constraint.ConstraintLayout>
