@@ -135,7 +135,7 @@ public class RecipeStepDetailFragment extends Fragment {
                 if (position == 0) {
                     recipeStepCount.setText(R.string.recipe_introduction);
                 } else {
-                    recipeStepCount.setText(getString(R.string.recipe_step_count, position, count));
+                    recipeStepCount.setText(getString(R.string.recipe_step_count, position, count - 1));
                 }
             }
 

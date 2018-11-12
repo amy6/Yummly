@@ -1,13 +1,16 @@
 package com.example.mahima.yummly;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -15,8 +18,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.mahima.yummly.Constants.GRID_LAYOUT;
-import static com.example.mahima.yummly.Constants.HORIZONTAL_LINEAR_LAYOUT;
 import static com.example.mahima.yummly.Constants.LOG_TAG;
 import static com.example.mahima.yummly.Constants.STAGGERRED_GRID_LAYOUT;
 
@@ -47,7 +48,7 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
         switch (i) {
             case RECIPE_INGREDIENTS_VIEW:
                 viewHolder = new RecipeIngredientViewHolder(LayoutInflater.from(context)
-                .inflate(R.layout.layout_recipe_list, viewGroup, false));
+                        .inflate(R.layout.layout_recipe_list, viewGroup, false));
                 break;
             case RECIPE_STEPS_VIEW:
                 viewHolder = new RecipeStepViewHolder(LayoutInflater.from(context)
@@ -69,10 +70,18 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
                 recipeIngredientViewHolder.recyclerView.setAdapter(adapter);
                 break;
             case RECIPE_STEPS_VIEW:
-                RecipeStep recipeStep = recipeSteps.get(i-1);
+                RecipeStep recipeStep = recipeSteps.get(i - 1);
                 RecipeStepViewHolder recipeStepViewHolder =
                         (RecipeStepViewHolder) viewHolder;
                 recipeStepViewHolder.shortDesc.setText(recipeStep.getShortDescription());
+                if (recipeStep.getId() > 0) {
+                    recipeStepViewHolder.recipeStepCount.setVisibility(View.VISIBLE);
+                    recipeStepViewHolder.recipeStepCount.setText(String.valueOf(recipeStep.getId()));
+                    recipeStepViewHolder.shortDesc.setTypeface(null, Typeface.NORMAL);
+                } else {
+                    recipeStepViewHolder.recipeStepCount.setVisibility(View.INVISIBLE);
+                    recipeStepViewHolder.shortDesc.setTypeface(null, Typeface.BOLD);
+                }
                 Log.d(LOG_TAG, "Position " + i + " desc : " + recipeStep.getShortDescription());
 
                 if (isTwoPane) {
@@ -103,24 +112,34 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
 
     public class RecipeStepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.recipe_step_card)
-        CardView cardView;
+        @BindView(R.id.recipe_step_layout)
+        ConstraintLayout constraintLayout;
         @BindView(R.id.recipe_step_short_desc)
         TextView shortDesc;
+        @BindView(R.id.recipe_step_count)
+        TextView recipeStepCount;
+        @BindView(R.id.play_button)
+        ImageView playRecipeStep;
 
         public RecipeStepViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
-            cardView.setOnClickListener(this);
+            constraintLayout.setOnClickListener(this);
+            playRecipeStep.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            int position = getAdapterPosition() - 1;
-            onItemClickListener.onItemClick(position);
-            selectedPosition = getAdapterPosition();
-            notifyDataSetChanged();
+            switch (v.getId()) {
+                case R.id.recipe_step_layout:
+                case R.id.play_button:
+                    int position = getAdapterPosition() - 1;
+                    onItemClickListener.onItemClick(position);
+                    selectedPosition = getAdapterPosition();
+                    notifyDataSetChanged();
+                    break;
+            }
         }
     }
 
