@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 
 import static com.example.mahima.yummly.Constants.LOG_TAG;
 import static com.example.mahima.yummly.Constants.STAGGERRED_GRID_LAYOUT;
+import static com.example.mahima.yummly.Constants.VERTICAL_LINEAR_LAYOUT;
 
 public class RecipeStepAdapter extends RecyclerView.Adapter {
 
@@ -83,8 +84,16 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
             case RECIPE_INGREDIENTS_VIEW:
                 RecipeIngredientViewHolder recipeIngredientViewHolder =
                         (RecipeIngredientViewHolder) viewHolder;
-                Utils.setUpRecyclerView(context, recipeIngredientViewHolder.recyclerView,
-                        STAGGERRED_GRID_LAYOUT);
+
+                if (isTwoPane) {
+                    Utils.setUpRecyclerView(context, recipeIngredientViewHolder.recyclerView,
+                            VERTICAL_LINEAR_LAYOUT);
+                } else {
+                    Utils.setUpRecyclerView(context, recipeIngredientViewHolder.recyclerView,
+                            STAGGERRED_GRID_LAYOUT);
+                }
+
+
                 RecipeIngredientAdapter adapter = new RecipeIngredientAdapter(context, ingredients);
                 recipeIngredientViewHolder.recyclerView.setAdapter(adapter);
                 break;
@@ -105,11 +114,14 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
                 Log.d(LOG_TAG, "Position " + i + " desc : " + recipeStep.getShortDescription());
 
                 if (isTwoPane) {
+                    recipeStepViewHolder.playRecipeStep.setVisibility(View.GONE);
                     if (selectedPosition == i) {
                         recipeStepViewHolder.itemView.setSelected(true);
                     } else {
                         recipeStepViewHolder.itemView.setSelected(false);
                     }
+                } else {
+                    recipeStepViewHolder.playRecipeStep.setVisibility(View.VISIBLE);
                 }
                 break;
         }

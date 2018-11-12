@@ -5,9 +5,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -36,6 +40,12 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
     @Nullable
     @BindView(R.id.recipe_step_desc)
     TextView recipeStepDesc;
+    @Nullable
+    @BindView(R.id.recipe_step_count)
+    TextView recipeStepCount;
+    @Nullable
+    @BindView(R.id.empty_image_view)
+    ImageView emptyImageView;
 
     private boolean isTwoPane;
     private Recipe recipe;
@@ -69,8 +79,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             currentWindow = savedInstanceState.getInt("current_window");
             playbackPosition = savedInstanceState.getLong("playback_position");
             currentPosition = savedInstanceState.getInt("recipe_step_position");
-            Log.d(LOG_TAG, "TwoPane Restoring exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
-            Log.d(LOG_TAG, "TwoPane Restoring steps position:::\t\t" + currentPosition);
         }
 
         isTwoPane = findViewById(R.id.recipe_step_detail_container) != null;
@@ -78,16 +86,22 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
         if (getIntent() != null) {
             if (getIntent().hasExtra("recipe_id")) {
                 id = getIntent().getIntExtra("recipe_id", 0);
-                Log.d(LOG_TAG, "Inside get intent");
                 recipe = Utils.getRecipeById(this, id);
                 setTitle(recipe.getName());
 
                 recipeSteps = recipe.getSteps();
                 count = recipeSteps.size();
+                recipeStep = recipeSteps.get(currentPosition);
+
 
                 if (isTwoPane) {
-                    recipeStep = recipeSteps.get(currentPosition);
                     uri = Uri.parse(recipeStep.getVideoURL());
+                    if (recipeStepDesc != null) {
+                        recipeStepDesc.setText(recipeStep.getShortDescription());
+                    }
+                    if (recipeStepCount != null && recipeStep.getId() > 0) {
+                        recipeStepCount.setText(getString(R.string.recipe_step_count, recipeStep.getId(), count - 1));
+                    }
                     initializePlayer();
                 }
 
@@ -113,11 +127,34 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
         playbackPosition = 0;
         currentPosition = position;
         recipeStep = recipeSteps.get(currentPosition);
+
+        if (playerView != null && emptyImageView != null && recipeStep != null) {
+            if (recipeStep.getVideoURL() == null || TextUtils.isEmpty(recipeStep.getVideoURL())) {
+                playerView.setVisibility(View.GONE);
+                emptyImageView.setVisibility(View.VISIBLE);
+                if (recipeStep.getThumbnailURL() != null &&
+                        !TextUtils.isEmpty(recipeStep.getThumbnailURL()) &&
+                        !recipeStep.getThumbnailURL().contains(".mp4")) {
+                    emptyImageView.setImageURI(Uri.parse(recipeStep.getThumbnailURL()));
+                } else {
+                    int[] imageIds = Utils.getRecipeImages(this);
+                    Glide.with(this)
+                            .load(imageIds[id - 1])
+                            .into(emptyImageView);
+                }
+            } else {
+                playerView.setVisibility(View.VISIBLE);
+                emptyImageView.setVisibility(View.GONE);
+            }
+        }
+
         if (isTwoPane) {
             if (recipeStepDesc != null) {
                 recipeStepDesc.setText(recipeStep.getDescription());
             }
-            Log.d(LOG_TAG, "Video url is :" + recipeStep.getVideoURL());
+            if (recipeStepCount != null && recipeStep.getId() > 0) {
+                recipeStepCount.setText(getString(R.string.recipe_step_count, recipeStep.getId(), count - 1));
+            }
             uri = Uri.parse(recipeStep.getVideoURL());
             initializePlayer();
         } else {
@@ -145,7 +182,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
 
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource);
-        Log.d(LOG_TAG, "TwoPane Initializing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
     }
@@ -164,7 +200,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             initializePlayer();
         }
     }
-
 
 
     @Override
@@ -199,7 +234,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
-            Log.d(LOG_TAG, "TwoPane Releasing exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
             player.release();
             player = null;
         }
@@ -222,8 +256,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             outState.putInt("current_window", currentWindow);
             outState.putLong("playback_position", playbackPosition);
             outState.putInt("recipe_step_position", currentPosition);
-            Log.d(LOG_TAG, "TwoPane Saving exoplayer\t\t" + playWhenReady + "\t" + currentWindow + "\t" + playbackPosition);
-            Log.d(LOG_TAG, "TwoPane Saving steps position:::\t\t" + currentPosition);
         }
     }
 
