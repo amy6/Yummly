@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -25,7 +26,9 @@ public class YummlyWidgetProvider extends AppWidgetProvider {
         Intent intent = new Intent(context, YummlyRemoteViewsService.class);
         views.setRemoteAdapter(R.id.appwidget_list_view, intent);
 
-        views.setTextViewText(R.id.recipe_name, recipeName);
+        if (recipeName != null && !TextUtils.isEmpty(recipeName)) {
+            views.setTextViewText(R.id.recipe_name, recipeName);
+        }
 
         views.setEmptyView(R.id.appwidget_list_view, R.id.appwidget_empty_text);
 

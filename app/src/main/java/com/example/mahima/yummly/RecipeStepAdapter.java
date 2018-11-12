@@ -15,8 +15,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.mahima.yummly.Constants.GRID_LAYOUT;
 import static com.example.mahima.yummly.Constants.HORIZONTAL_LINEAR_LAYOUT;
 import static com.example.mahima.yummly.Constants.LOG_TAG;
+import static com.example.mahima.yummly.Constants.STAGGERRED_GRID_LAYOUT;
 
 public class RecipeStepAdapter extends RecyclerView.Adapter {
 
@@ -62,7 +64,7 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
                 RecipeIngredientViewHolder recipeIngredientViewHolder =
                         (RecipeIngredientViewHolder) viewHolder;
                 Utils.setUpRecyclerView(context, recipeIngredientViewHolder.recyclerView,
-                        HORIZONTAL_LINEAR_LAYOUT);
+                        STAGGERRED_GRID_LAYOUT);
                 RecipeIngredientAdapter adapter = new RecipeIngredientAdapter(context, ingredients);
                 recipeIngredientViewHolder.recyclerView.setAdapter(adapter);
                 break;

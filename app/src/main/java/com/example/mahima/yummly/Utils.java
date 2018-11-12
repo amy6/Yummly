@@ -5,8 +5,10 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -19,8 +21,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.example.mahima.yummly.Constants.GRID_LAYOUT;
 import static com.example.mahima.yummly.Constants.HORIZONTAL_LINEAR_LAYOUT;
 import static com.example.mahima.yummly.Constants.RECIPE_TYPE;
+import static com.example.mahima.yummly.Constants.STAGGERRED_GRID_LAYOUT;
 import static com.example.mahima.yummly.Constants.VERTICAL_LINEAR_LAYOUT;
 
 public final class Utils {
@@ -34,6 +38,8 @@ public final class Utils {
             case HORIZONTAL_LINEAR_LAYOUT:
                 recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                 break;
+            case STAGGERRED_GRID_LAYOUT:
+                recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         }
 
         recyclerView.setHasFixedSize(true);
@@ -71,5 +77,21 @@ public final class Utils {
         typedArray.recycle();
 
         return ids;
+    }
+
+    public static int getIngredientMeasureIndicator(String measure) {
+        int imageId = 0;
+        switch (measure) {
+            case "CUP":
+                imageId = R.drawable.ic_cup;
+                break;
+            case "TSP":
+            case "TBLSP":
+                imageId = R.drawable.ic_spoon;
+                break;
+            default:
+                imageId = R.drawable.ic_scale;
+        }
+        return imageId;
     }
 }

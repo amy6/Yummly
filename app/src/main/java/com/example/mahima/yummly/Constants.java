@@ -13,4 +13,6 @@ public final class Constants {
 
     public static final int VERTICAL_LINEAR_LAYOUT = 0;
     public static final int HORIZONTAL_LINEAR_LAYOUT = 1;
+    public static final int GRID_LAYOUT = 2;
+    public static final int STAGGERRED_GRID_LAYOUT = 3;
 }

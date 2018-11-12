@@ -6,7 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -36,6 +39,11 @@ public class RecipeIngredientAdapter extends RecyclerView.Adapter<RecipeIngredie
         recipeIngredientViewHolder.ingredient.setText(ingredient.getIngredient());
         recipeIngredientViewHolder.quantity.setText(String.valueOf(ingredient.getQuantity()));
         recipeIngredientViewHolder.measure.setText(ingredient.getMeasure());
+        int imageId = Utils.getIngredientMeasureIndicator(ingredient.getMeasure());
+        Glide.with(context)
+                .load(imageId)
+                .into(recipeIngredientViewHolder.measureIndicator);
+
     }
 
     @Override
@@ -51,6 +59,8 @@ public class RecipeIngredientAdapter extends RecyclerView.Adapter<RecipeIngredie
         TextView quantity;
         @BindView(R.id.measure)
         TextView measure;
+        @BindView(R.id.measure_indicator)
+        ImageView measureIndicator;
 
         public RecipeIngredientViewHolder(@NonNull View itemView) {
             super(itemView);
