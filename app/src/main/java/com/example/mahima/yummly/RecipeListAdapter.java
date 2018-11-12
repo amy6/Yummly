@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,9 +53,17 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
     public void onBindViewHolder(@NonNull RecipeViewHolder recipeViewHolder, int i) {
         Recipe recipe = recipeList.get(i);
         recipeViewHolder.recipeName.setText(recipe.getName());
-        Glide.with(context)
-                .load(imageIds[i])
-                .into(recipeViewHolder.recipeImage);
+        if (recipe.getImage() != null && !TextUtils.isEmpty(recipe.getImage())) {
+            Glide.with(context)
+                    .load(recipe.getImage())
+                    .into(recipeViewHolder.recipeImage);
+        } else {
+            Glide.with(context)
+                    .load(imageIds[i])
+                    .into(recipeViewHolder.recipeImage);
+        }
+        recipeViewHolder.recipeServings.setText(context.getResources().getString(
+                R.string.recipe_servings, recipe.getServings()));
     }
 
     @Override
@@ -70,6 +79,8 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
         TextView recipeName;
         @BindView(R.id.recipe_card_image)
         ImageView recipeImage;
+        @BindView(R.id.recipe_servings)
+        TextView recipeServings;
 
         public RecipeViewHolder(@NonNull View itemView) {
             super(itemView);
