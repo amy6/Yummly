@@ -6,12 +6,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -47,10 +50,10 @@ public class RecipeStepDetailFragment extends Fragment {
     TextView recipeStepDesc;
     @Nullable
     @BindView(R.id.prev_button)
-    Button prevButton;
+    ImageButton prevButton;
     @Nullable
     @BindView(R.id.next_button)
-    Button nextButton;
+    ImageButton nextButton;
     @BindView(R.id.empty_image_view)
     ImageView emptyImageView;
     @Nullable
@@ -132,10 +135,15 @@ public class RecipeStepDetailFragment extends Fragment {
         if (recipeStep != null) {
             if (recipeStepDesc != null) {
                 recipeStepDesc.setText(recipeStep.getDescription());
-                if (position == 0) {
-                    recipeStepCount.setText(R.string.recipe_introduction);
-                } else {
-                    recipeStepCount.setText(getString(R.string.recipe_step_count, position, count - 1));
+                if (recipeStepCount != null) {
+                    if (position == 0) {
+                        recipeStepCount.setText(R.string.recipe_introduction);
+                        if (prevButton != null) {
+                            prevButton.setEnabled(false);
+                        }
+                    } else {
+                        recipeStepCount.setText(getString(R.string.recipe_step_count, position, count - 1));
+                    }
                 }
             }
 
@@ -172,8 +180,10 @@ public class RecipeStepDetailFragment extends Fragment {
                 prevButton.setEnabled(true);
                 position--;
                 nextButton.setEnabled(true);
+                DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.white));
                 if (position <= 0) {
                     prevButton.setEnabled(false);
+                    DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
                 }
                 Log.d(LOG_TAG, "Position : " + position);
                 Recipe recipe = Utils.getRecipeById(getContext(), id);
@@ -194,8 +204,10 @@ public class RecipeStepDetailFragment extends Fragment {
                 nextButton.setEnabled(true);
                 position++;
                 prevButton.setEnabled(true);
+                DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.white));
                 if (position >= count-1) {
                     nextButton.setEnabled(false);
+                    DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
                 }
                 Log.d(LOG_TAG, "Position : " + position);
                 Recipe recipe = Utils.getRecipeById(getContext(), id);

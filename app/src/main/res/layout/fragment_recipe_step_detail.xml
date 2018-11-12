@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="@android:color/black"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_marginTop="16dp"
         tools:text="Step 5 of 12"/>
 
@@ -52,28 +52,32 @@
         android:textColor="@android:color/black"
         tools:text="Whisk the graham cracker crumbs, 50 grams (1/4 cup) of sugar, and 1/2 teaspoon of salt together in a medium bowl. Pour the melted butter and 1 teaspoon of vanilla into the dry ingredients and stir together until evenly mixed." />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/button_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp">
 
-        <Button
+        <ImageButton
             android:id="@+id/prev_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:enabled="false"
-            android:text="Prev" />
+            android:src="@drawable/ic_keyboard_arrow_left"
+            android:background="@drawable/background_circular"
+            android:contentDescription="@string/no_description_available" />
 
-        <Button
+        <ImageButton
             android:id="@+id/next_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Next" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_keyboard_arrow_right"
+            android:background="@drawable/background_circular"
+            android:contentDescription="@string/no_description_available"/>
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>
