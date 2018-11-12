@@ -6,5 +6,6 @@
     <string name="no_ingredients_found">No ingredients found</string>
     <string name="recipe_step_count">Step %1$d of %2$d</string>
     <string name="recipe_introduction">Introduction</string>
+    <string name="recipe_ingredients">Recipe Ingredients</string>
 
 </resources>

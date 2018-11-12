@@ -2,9 +2,15 @@ package com.example.mahima.yummly;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.RemoteViews;
+
+import static com.example.mahima.yummly.Constants.LOG_TAG;
+import static com.example.mahima.yummly.RecipeListAdapter.SHARED_PREFERENCES_FILE;
 
 /**
  * Implementation of App Widget functionality.
@@ -12,12 +18,14 @@ import android.widget.RemoteViews;
 public class YummlyWidgetProvider extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+                                int appWidgetId, String recipeName) {
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.yummly_widget);
         Intent intent = new Intent(context, YummlyRemoteViewsService.class);
         views.setRemoteAdapter(R.id.appwidget_list_view, intent);
+
+        views.setTextViewText(R.id.recipe_name, recipeName);
 
         views.setEmptyView(R.id.appwidget_list_view, R.id.appwidget_empty_text);
 
@@ -29,18 +37,24 @@ public class YummlyWidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            updateAppWidget(context, appWidgetManager, appWidgetId, context.getResources().getString(R.string.recipe_ingredients));
         }
     }
 
     @Override
-    public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
-    }
+    public void onReceive(Context context, Intent intent) {
 
-    @Override
-    public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
+        String recipeName = intent.getStringExtra("recipe_name");
+
+        if (intent.getAction() != null && intent.getAction().equals("android.appwidget.action.APPWIDGET_UPDATE")) {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, YummlyWidgetProvider.class));
+            for (int appWidgetId : appWidgetIds) {
+                updateAppWidget(context, appWidgetManager, appWidgetId, recipeName);
+            }
+        } else {
+            super.onReceive(context, intent);
+        }
     }
 }
 

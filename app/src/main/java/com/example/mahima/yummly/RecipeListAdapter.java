@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.mahima.yummly.Constants.LOG_TAG;
 
 public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder> {
 
@@ -92,6 +95,12 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, YummlyWidgetProvider.class));
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.appwidget_list_view);
+
+            Intent widgetIntent = new Intent(context, YummlyWidgetProvider.class);
+            widgetIntent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
+            widgetIntent.putExtra("recipe_name", recipe.getName());
+            Log.d(LOG_TAG, "Sending broadcast");
+            context.sendBroadcast(widgetIntent);
         }
     }
 }

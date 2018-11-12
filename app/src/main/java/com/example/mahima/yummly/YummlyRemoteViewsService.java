@@ -3,12 +3,14 @@ package com.example.mahima.yummly;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mahima.yummly.Constants.LOG_TAG;
 import static com.example.mahima.yummly.RecipeListAdapter.SHARED_PREFERENCES_FILE;
 
 public class YummlyRemoteViewsService extends RemoteViewsService {
@@ -34,6 +36,7 @@ public class YummlyRemoteViewsService extends RemoteViewsService {
 
         @Override
         public void onDataSetChanged() {
+            Log.d(LOG_TAG, "onDataSetChanged called");
             SharedPreferences sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES_FILE, MODE_PRIVATE);
             if (sharedPrefs.contains("recipe_id")) {
                 int recipeId = sharedPrefs.getInt("recipe_id", 0);

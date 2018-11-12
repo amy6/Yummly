@@ -1,12 +1,25 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/recipe_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@android:color/white"
+        android:padding="16dp"
+        android:background="@color/colorPrimary"
+        tools:text="Nutella Pie"/>
 
 
     <ListView
         android:id="@+id/appwidget_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/recipe_name"/>
 
     <TextView
         android:id="@+id/appwidget_empty_text"
@@ -15,6 +28,8 @@
         android:layout_gravity="center"
         android:textAppearance="?android:textAppearanceMedium"
         android:padding="8dp"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
         android:text="@string/no_ingredients_found" />
 
-</FrameLayout>
+</RelativeLayout>
