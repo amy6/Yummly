@@ -7,28 +7,28 @@
         android:id="@+id/recipe_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="@android:color/white"
-        android:padding="16dp"
         android:background="@color/colorPrimary"
-        android:text="@string/recipe_ingredients" />
+        android:padding="@dimen/dimen_16dp"
+        android:text="@string/recipe_ingredients"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@android:color/white" />
 
 
     <ListView
         android:id="@+id/appwidget_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/recipe_name"/>
+        android:layout_below="@id/recipe_name" />
 
     <TextView
         android:id="@+id/appwidget_empty_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:padding="8dp"
-        android:visibility="gone"
         android:layout_centerInParent="true"
-        android:text="@string/no_ingredients_found" />
+        android:layout_gravity="center"
+        android:padding="@dimen/dimen_8dp"
+        android:text="@string/no_ingredients_found"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:visibility="gone" />
 
 </RelativeLayout>

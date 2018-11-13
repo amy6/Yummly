@@ -7,19 +7,20 @@
 
     <FrameLayout
         android:id="@+id/recipe_step_list_container"
-        android:layout_width="200dp"
+        android:layout_width="@dimen/dimen_200dp"
         android:layout_height="match_parent" />
 
-    <View android:background="#000000"
-        android:layout_width="1dp"
-        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="@dimen/dimen_1dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black" />
 
     <fragment
         android:id="@+id/recipe_step_detail_container"
+        android:name="com.example.mahima.yummly.ui.RecipeStepDetailFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        tools:layout="@layout/fragment_recipe_step_detail"
-        android:name="com.example.mahima.yummly.ui.RecipeStepDetailFragment"/>
+        tools:layout="@layout/fragment_recipe_step_detail" />
 
 </LinearLayout>

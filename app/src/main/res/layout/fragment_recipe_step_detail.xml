@@ -12,32 +12,32 @@
         android:id="@+id/recipe_step_count"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_16dp"
         android:gravity="center"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/colorPrimaryDark"
-        android:layout_marginTop="16dp"
-        tools:text="Step 5 of 12"/>
+        tools:text="Step 5 of 12" />
 
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="@dimen/dimen_16dp">
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/recipe_step_video"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="@dimen/dimen_250dp"
             app:show_buffering="when_playing" />
 
         <ImageView
             android:id="@+id/empty_image_view"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="@dimen/dimen_250dp"
             android:contentDescription="@string/no_description_available"
             android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:src="@drawable/default_image" />
+            android:src="@drawable/default_image"
+            android:visibility="gone" />
 
     </FrameLayout>
 
@@ -45,7 +45,7 @@
         android:id="@+id/recipe_step_desc"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/dimen_4dp"
         android:layout_weight="1"
         android:gravity="center"
         android:textAppearance="?android:textAppearanceMedium"
@@ -56,25 +56,25 @@
         android:id="@+id/button_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp">
+        android:layout_margin="@dimen/dimen_16dp">
 
         <ImageButton
             android:id="@+id/prev_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_keyboard_arrow_left"
+            android:layout_width="@dimen/dimen_48dp"
+            android:layout_height="@dimen/dimen_48dp"
             android:background="@drawable/background_circular"
-            android:contentDescription="@string/no_description_available" />
+            android:contentDescription="@string/no_description_available"
+            android:src="@drawable/ic_keyboard_arrow_left" />
 
         <ImageButton
             android:id="@+id/next_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/dimen_48dp"
+            android:layout_height="@dimen/dimen_48dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:src="@drawable/ic_keyboard_arrow_right"
             android:background="@drawable/background_circular"
-            android:contentDescription="@string/no_description_available"/>
+            android:contentDescription="@string/no_description_available"
+            android:src="@drawable/ic_keyboard_arrow_right" />
 
 
     </RelativeLayout>

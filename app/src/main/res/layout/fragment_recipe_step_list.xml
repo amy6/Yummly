@@ -5,6 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.RecipeStepListFragment">
 
-    <include layout="@layout/layout_recipe_list"/>
+    <include layout="@layout/layout_recipe_list" />
 
 </FrameLayout>
