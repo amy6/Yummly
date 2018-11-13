@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mahima.yummly.R;
@@ -35,6 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.mahima.yummly.utils.Constants.LOG_TAG;
+import static java.security.AccessController.getContext;
 
 public class RecipeStepListActivity extends AppCompatActivity implements OnItemClickListener, Player.EventListener {
 
@@ -167,7 +169,13 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
                 recipeStepCount.setText(getString(R.string.recipe_step_count, recipeStep.getId(), count - 1));
             }
             uri = Uri.parse(recipeStep.getVideoURL());
-            initializePlayer();
+
+            if (Utils.checkInternetConnection(this)) {
+                Toast.makeText(this, R.string.check_internet_connection, Toast.LENGTH_SHORT).show();
+            } else {
+                initializePlayer();
+            }
+
         } else {
             // handle intent for mobile screens to display video in a new screen
             Intent intent = new Intent(this, RecipeStepDetailActivity.class);

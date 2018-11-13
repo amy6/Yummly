@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mahima.yummly.R;
@@ -122,8 +123,6 @@ public class RecipeStepDetailFragment extends Fragment {
             recipeStep = getArguments().getParcelable("recipe_step");
             count = getArguments().getInt("recipe_steps_count");
             position = getArguments().getInt("recipe_step_position");
-
-            displayRecipeDetails();
         }
 
         // retrieve saved state if any
@@ -134,24 +133,33 @@ public class RecipeStepDetailFragment extends Fragment {
                 Recipe recipe = Utils.getRecipeById(getContext(), id);
                 recipeStep = recipe.getSteps().get(position);
             }
-
-            displayRecipeDetails();
         }
-
+            displayRecipeDetails();
     }
 
     private void displayRecipeDetails() {
 
         // disable next and previous buttons for the last and first step video
-        if (getContext() != null) {
-            if (position == count - 1 && nextButton != null) {
+        if (getContext() != null && nextButton != null && prevButton != null) {
+            if (position == count - 1) {
                 nextButton.setEnabled(false);
                 DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+            } else {
+                nextButton.setEnabled(true);
+                DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.white));
             }
-            if (position == 0 && prevButton != null) {
+            if (position == 0) {
                 prevButton.setEnabled(false);
                 DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+            } else {
+                prevButton.setEnabled(true);
+                DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.white));
             }
+        }
+
+        if (getContext() != null && Utils.checkInternetConnection(getContext())) {
+            Toast.makeText(getContext(), R.string.check_internet_connection, Toast.LENGTH_SHORT).show();
+            return;
         }
 
         // display recipe description, current step count and total steps

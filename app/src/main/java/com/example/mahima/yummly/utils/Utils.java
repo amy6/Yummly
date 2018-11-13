@@ -3,6 +3,8 @@ package com.example.mahima.yummly.utils;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +24,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Context.CONNECTIVITY_SERVICE;
 import static com.example.mahima.yummly.utils.Constants.GRID_LAYOUT;
 import static com.example.mahima.yummly.utils.Constants.HORIZONTAL_LINEAR_LAYOUT;
 import static com.example.mahima.yummly.utils.Constants.RECIPE_TYPE;
@@ -34,7 +37,7 @@ public final class Utils {
     /**
      * set up layout manager for recycler view
      *
-     * @param context      reference to context to access resources
+     * @param context reference to context to access application resources
      * @param recyclerView reference to recycler view
      * @param layoutType   flag indicating layout manager type
      */
@@ -62,7 +65,7 @@ public final class Utils {
     /**
      * determines column span count based on device screen size
      *
-     * @param context reference to context to access resources
+     * @param context reference to context to access application resources
      * @return column span count
      */
     private static int getSpanCount(Context context) {
@@ -74,7 +77,7 @@ public final class Utils {
     /**
      * fetches recipes from json
      *
-     * @param context reference to context to access resources
+     * @param context reference to context to access application resources
      * @return list of recipes
      */
     public static List<Recipe> getRecipes(Context context) {
@@ -96,7 +99,7 @@ public final class Utils {
     /**
      * gets a recipe by a given id
      *
-     * @param context reference to context to access resources
+     * @param context reference to context to access application resources
      * @param id      recipe id
      * @return recipe object
      */
@@ -107,7 +110,7 @@ public final class Utils {
     /**
      * fetches images for all recipes
      *
-     * @param context reference to context to access resources
+     * @param context reference to context to access application resources
      * @return array of image resource identifiers
      */
     public static int[] getRecipeImages(Context context) {
@@ -150,7 +153,7 @@ public final class Utils {
     /**
      * determines if the device screen corresponds to that of a tablet
      *
-     * @param context reference to context to access resources
+     * @param context reference to context to access application resources
      * @return boolean flag indicating whether the screen corresponds to that of a tablet
      */
     public static boolean isTablet(Context context) {
@@ -166,10 +169,26 @@ public final class Utils {
     /**
      * determines if the screen orientation is landscape
      *
-     * @param context reference to context to access resources
+     * @param context reference to context to access application resources
      * @return boolean flag indicating whether the orientation is landscape
      */
     public static boolean isInLandscape(Context context) {
         return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    /**
+     * verifies if the device is connected to the internet
+     *
+     * @param context reference to context to access application resources
+     * @return a boolean flag indicating whether device is connected to the internet
+     */
+    public static boolean checkInternetConnection(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = null;
+        if (connectivityManager != null) {
+            networkInfo = connectivityManager.getActiveNetworkInfo();
+        }
+
+        return networkInfo == null || !networkInfo.isConnected();
     }
 }
