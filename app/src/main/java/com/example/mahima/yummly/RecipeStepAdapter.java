@@ -18,6 +18,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.mahima.yummly.Constants.GRID_LAYOUT;
+import static com.example.mahima.yummly.Constants.HORIZONTAL_LINEAR_LAYOUT;
 import static com.example.mahima.yummly.Constants.LOG_TAG;
 import static com.example.mahima.yummly.Constants.STAGGERRED_GRID_LAYOUT;
 import static com.example.mahima.yummly.Constants.VERTICAL_LINEAR_LAYOUT;
@@ -88,6 +90,9 @@ public class RecipeStepAdapter extends RecyclerView.Adapter {
                 if (isTwoPane) {
                     Utils.setUpRecyclerView(context, recipeIngredientViewHolder.recyclerView,
                             VERTICAL_LINEAR_LAYOUT);
+                } else if (Utils.isInLandscape(context)){
+                    Utils.setUpRecyclerView(context, recipeIngredientViewHolder.recyclerView,
+                            GRID_LAYOUT);
                 } else {
                     Utils.setUpRecyclerView(context, recipeIngredientViewHolder.recyclerView,
                             STAGGERRED_GRID_LAYOUT);

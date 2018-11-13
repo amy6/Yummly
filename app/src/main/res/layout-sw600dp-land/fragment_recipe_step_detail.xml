@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/player_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    tools:context=".RecipeStepDetailFragment">
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/recipe_step_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:show_buffering="when_playing" />
+
+    <ImageView
+        android:id="@+id/empty_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/no_description_available"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_image"
+        android:visibility="gone" />
+
+</FrameLayout>

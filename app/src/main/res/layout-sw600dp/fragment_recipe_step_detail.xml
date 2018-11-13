@@ -35,7 +35,7 @@
         <ImageView
             android:id="@+id/empty_image_view"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="500dp"
             android:contentDescription="@string/no_description_available"
             android:scaleType="centerCrop"
             android:visibility="gone"
