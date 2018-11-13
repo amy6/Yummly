@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+import android.widget.TextView;
 
 import com.example.mahima.yummly.model.Recipe;
 import com.example.mahima.yummly.model.RecipeIngredient;
@@ -63,6 +64,7 @@ public class YummlyRemoteViewsService extends RemoteViewsService {
             // update remote views for widget list
             RecipeIngredient ingredient = ingredients.get(position);
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), android.R.layout.simple_list_item_1);
+            remoteViews.setTextColor(android.R.id.text1, context.getResources().getColor(android.R.color.black));
             remoteViews.setTextViewText(android.R.id.text1, ingredient.getIngredient());
             return remoteViews;
         }

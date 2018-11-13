@@ -5,10 +5,13 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
 import com.example.mahima.yummly.R;
+
+import static com.example.mahima.yummly.adapter.RecipeListAdapter.SHARED_PREFERENCES_FILE;
 
 /**
  * Implementation of App Widget functionality.
@@ -23,9 +26,13 @@ public class YummlyWidgetProvider extends AppWidgetProvider {
         Intent intent = new Intent(context, YummlyRemoteViewsService.class);
         views.setRemoteAdapter(R.id.appwidget_list_view, intent);
 
-        if (recipeName != null && !TextUtils.isEmpty(recipeName)) {
-            views.setTextViewText(R.id.recipe_name, recipeName);
+        SharedPreferences sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE);
+
+        if (recipeName == null || TextUtils.isEmpty(recipeName)) {
+            recipeName = sharedPrefs.getString("recipe_name", context.getResources().getString(R.string.recipe_ingredients));
         }
+
+        views.setTextViewText(R.id.recipe_name, recipeName);
 
         views.setEmptyView(R.id.appwidget_list_view, R.id.appwidget_empty_text);
 

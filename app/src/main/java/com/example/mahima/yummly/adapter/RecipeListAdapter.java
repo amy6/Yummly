@@ -101,6 +101,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
                     Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPrefs.edit();
             editor.putInt("recipe_id", recipe.getId());
+            editor.putString("recipe_name", recipe.getName());
             editor.apply();
 
             // notify widget manager to update widget list data
