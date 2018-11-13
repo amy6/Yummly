@@ -1,4 +1,4 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,9 +14,9 @@ public class Recipe implements Parcelable {
     @SerializedName("name")
     private String name;
     @SerializedName("ingredients")
-    private List<RecipeIngredient> ingredients = null;
+    private List<RecipeIngredient> ingredients;
     @SerializedName("steps")
-    private List<RecipeStep> steps = null;
+    private List<RecipeStep> steps;
     @SerializedName("servings")
     private Integer servings;
     @SerializedName("image")

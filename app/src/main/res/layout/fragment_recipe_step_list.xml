@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RecipeStepListFragment">
+    tools:context=".ui.RecipeStepListFragment">
 
     <include layout="@layout/layout_recipe_list"/>
 

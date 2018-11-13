@@ -1,4 +1,4 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.mahima.yummly.R;
+import com.example.mahima.yummly.model.RecipeIngredient;
+import com.example.mahima.yummly.utils.Utils;
 
 import java.util.List;
 
@@ -30,7 +33,7 @@ public class RecipeIngredientAdapter extends RecyclerView.Adapter<RecipeIngredie
     @Override
     public RecipeIngredientViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         return new RecipeIngredientViewHolder(LayoutInflater.from(context)
-        .inflate(R.layout.layout_recipe_ingredient_list_item, viewGroup, false));
+                .inflate(R.layout.layout_recipe_ingredient_list_item, viewGroup, false));
     }
 
     @Override

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RecipeStepListActivity">
+    tools:context=".ui.RecipeStepListActivity">
 
     <FrameLayout
         android:id="@+id/recipe_step_list_container"
@@ -20,6 +20,6 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         tools:layout="@layout/fragment_recipe_step_detail"
-        android:name="com.example.mahima.yummly.RecipeStepDetailFragment"/>
+        android:name="com.example.mahima.yummly.ui.RecipeStepDetailFragment"/>
 
 </LinearLayout>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true"
     android:orientation="vertical"
-    tools:context=".RecipeStepDetailFragment">
+    tools:context=".ui.RecipeStepDetailFragment">
 
     <TextView
         android:id="@+id/recipe_step_count"

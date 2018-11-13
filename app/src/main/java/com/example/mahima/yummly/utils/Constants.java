@@ -1,5 +1,7 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.utils;
 
+import com.example.mahima.yummly.model.Recipe;
+import com.example.mahima.yummly.ui.RecipeListActivity;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;

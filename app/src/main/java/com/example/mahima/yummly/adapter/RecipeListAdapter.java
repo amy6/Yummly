@@ -1,16 +1,14 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.adapter;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +16,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
+import com.example.mahima.yummly.R;
+import com.example.mahima.yummly.model.Recipe;
+import com.example.mahima.yummly.ui.RecipeStepListActivity;
+import com.example.mahima.yummly.utils.Utils;
+import com.example.mahima.yummly.widget.YummlyWidgetProvider;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.example.mahima.yummly.Constants.LOG_TAG;
 
 public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder> {
 
@@ -46,7 +44,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
     @Override
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         return new RecipeViewHolder(LayoutInflater.from(context)
-        .inflate(R.layout.layout_recipe_card_list_item, viewGroup, false));
+                .inflate(R.layout.layout_recipe_card_list_item, viewGroup, false));
     }
 
     @Override
@@ -54,6 +52,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
         Recipe recipe = recipeList.get(i);
         recipeViewHolder.recipeName.setText(recipe.getName());
         if (recipe.getImage() != null && !TextUtils.isEmpty(recipe.getImage())) {
+            // verify if the image provided in the data source is valid
             Glide.with(context)
                     .load(recipe.getImage())
                     .into(recipeViewHolder.recipeImage);
@@ -97,20 +96,22 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
             intent.putExtra("recipe_id", recipe.getId());
             context.startActivity(intent);
 
+            // save recipe id in shared preferences to be used for widget data
             SharedPreferences sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES_FILE,
                     Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPrefs.edit();
             editor.putInt("recipe_id", recipe.getId());
             editor.apply();
 
+            // notify widget manager to update widget list data
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, YummlyWidgetProvider.class));
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.appwidget_list_view);
 
+            // send a broadcast with widget update action to update the recipe name for widget
             Intent widgetIntent = new Intent(context, YummlyWidgetProvider.class);
             widgetIntent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
             widgetIntent.putExtra("recipe_name", recipe.getName());
-            Log.d(LOG_TAG, "Sending broadcast");
             context.sendBroadcast(widgetIntent);
         }
     }

@@ -1,4 +1,4 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

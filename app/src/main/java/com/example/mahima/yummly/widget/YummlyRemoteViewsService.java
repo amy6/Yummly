@@ -1,17 +1,19 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.widget;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+
+import com.example.mahima.yummly.model.Recipe;
+import com.example.mahima.yummly.model.RecipeIngredient;
+import com.example.mahima.yummly.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.mahima.yummly.Constants.LOG_TAG;
-import static com.example.mahima.yummly.RecipeListAdapter.SHARED_PREFERENCES_FILE;
+import static com.example.mahima.yummly.adapter.RecipeListAdapter.SHARED_PREFERENCES_FILE;
 
 public class YummlyRemoteViewsService extends RemoteViewsService {
 
@@ -36,11 +38,12 @@ public class YummlyRemoteViewsService extends RemoteViewsService {
 
         @Override
         public void onDataSetChanged() {
-            Log.d(LOG_TAG, "onDataSetChanged called");
+            // fetch recipe id from shared preferences
             SharedPreferences sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES_FILE, MODE_PRIVATE);
             if (sharedPrefs.contains("recipe_id")) {
                 int recipeId = sharedPrefs.getInt("recipe_id", 0);
                 Recipe recipe = Utils.getRecipeById(context, recipeId);
+                // get ingredients list
                 ingredients = new ArrayList<>(recipe.getIngredients());
             }
         }
@@ -57,11 +60,10 @@ public class YummlyRemoteViewsService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int position) {
+            // update remote views for widget list
             RecipeIngredient ingredient = ingredients.get(position);
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), android.R.layout.simple_list_item_1);
             remoteViews.setTextViewText(android.R.id.text1, ingredient.getIngredient());
-//            remoteViews.setTextViewText(R.id.quantity, String.valueOf(ingredient.getQuantity()));
-//            remoteViews.setTextViewText(R.id.measure, ingredient.getMeasure());
             return remoteViews;
         }
 

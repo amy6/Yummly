@@ -1,4 +1,4 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.ui;
 
 
 import android.content.Context;
@@ -7,10 +7,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.mahima.yummly.R;
+import com.example.mahima.yummly.adapter.RecipeStepAdapter;
+import com.example.mahima.yummly.listener.OnItemClickListener;
+import com.example.mahima.yummly.model.Recipe;
+import com.example.mahima.yummly.model.RecipeIngredient;
+import com.example.mahima.yummly.model.RecipeStep;
+import com.example.mahima.yummly.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,21 +25,18 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.mahima.yummly.Constants.LOG_TAG;
-import static com.example.mahima.yummly.Constants.VERTICAL_LINEAR_LAYOUT;
+import static com.example.mahima.yummly.utils.Constants.VERTICAL_LINEAR_LAYOUT;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecipeStepListFragment extends Fragment implements OnItemClickListener{
+public class RecipeStepListFragment extends Fragment implements OnItemClickListener {
 
     @BindView(R.id.recipe_recycler_view)
     RecyclerView recyclerView;
 
-    private List<RecipeStep> recipeSteps;
     private OnItemClickListener onItemClickListener;
-    private List<RecipeIngredient> recipeIngredients;
 
 
     public RecipeStepListFragment() {
@@ -42,6 +46,7 @@ public class RecipeStepListFragment extends Fragment implements OnItemClickListe
     public static RecipeStepListFragment newInstance(Recipe recipe, boolean isTwoPane) {
         RecipeStepListFragment fragment = new RecipeStepListFragment();
         Bundle args = new Bundle();
+        // save recipe details into fragment
         args.putParcelable("recipe", recipe);
         args.putBoolean("is_two_pane", isTwoPane);
         fragment.setArguments(args);
@@ -55,7 +60,7 @@ public class RecipeStepListFragment extends Fragment implements OnItemClickListe
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recipe_step_list, container, false);
@@ -67,8 +72,8 @@ public class RecipeStepListFragment extends Fragment implements OnItemClickListe
 
         ButterKnife.bind(this, view);
         Utils.setUpRecyclerView(getContext(), recyclerView, VERTICAL_LINEAR_LAYOUT);
-        recipeSteps = new ArrayList<>();
-        recipeIngredients = new ArrayList<>();
+        List<RecipeStep> recipeSteps = new ArrayList<>();
+        List<RecipeIngredient> recipeIngredients = new ArrayList<>();
 
         boolean isTwoPane = false;
         if (getArguments() != null) {
@@ -77,7 +82,6 @@ public class RecipeStepListFragment extends Fragment implements OnItemClickListe
                 recipeSteps = recipe.getSteps();
                 recipeIngredients = recipe.getIngredients();
             }
-            Log.d(LOG_TAG, "Recipe steps count : " + recipeSteps.size());
             isTwoPane = getArguments().getBoolean("is_two_pane");
         }
 

@@ -1,4 +1,4 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.listener;
 
 public interface OnItemClickListener {
 

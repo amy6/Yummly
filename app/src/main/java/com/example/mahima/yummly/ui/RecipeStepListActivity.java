@@ -1,4 +1,4 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -6,12 +6,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.mahima.yummly.R;
+import com.example.mahima.yummly.listener.OnItemClickListener;
+import com.example.mahima.yummly.model.Recipe;
+import com.example.mahima.yummly.model.RecipeStep;
+import com.example.mahima.yummly.utils.Utils;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -30,7 +34,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.mahima.yummly.Constants.LOG_TAG;
+import static com.example.mahima.yummly.utils.Constants.LOG_TAG;
 
 public class RecipeStepListActivity extends AppCompatActivity implements OnItemClickListener, Player.EventListener {
 
@@ -48,7 +52,6 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
     ImageView emptyImageView;
 
     private boolean isTwoPane;
-    private Recipe recipe;
     private Uri uri;
     private SimpleExoPlayer player;
     private boolean playWhenReady = true;
@@ -74,6 +77,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        // restore saved state if any
         if (savedInstanceState != null) {
             playWhenReady = savedInstanceState.getBoolean("play_when_ready");
             currentWindow = savedInstanceState.getInt("current_window");
@@ -81,19 +85,22 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             currentPosition = savedInstanceState.getInt("recipe_step_position");
         }
 
+        // determine if we are displaying the details in a 2-pane mode
         isTwoPane = findViewById(R.id.recipe_step_detail_container) != null;
 
         if (getIntent() != null) {
             if (getIntent().hasExtra("recipe_id")) {
                 id = getIntent().getIntExtra("recipe_id", 0);
-                recipe = Utils.getRecipeById(this, id);
+
+                //fetch recipe details
+                Recipe recipe = Utils.getRecipeById(this, id);
                 setTitle(recipe.getName());
 
                 recipeSteps = recipe.getSteps();
                 count = recipeSteps.size();
                 recipeStep = recipeSteps.get(currentPosition);
 
-
+                // define field data to be displayed for 2-pane mode
                 if (isTwoPane) {
                     uri = Uri.parse(recipeStep.getVideoURL());
                     if (recipeStepDesc != null) {
@@ -116,6 +123,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             }
         }
 
+        // set up event listener for player to save player state
         if (player != null) {
             player.addListener(this);
         }
@@ -123,11 +131,13 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
 
     @Override
     public void onItemClick(int position) {
+        // reset video seek state
         currentWindow = 0;
         playbackPosition = 0;
         currentPosition = position;
         recipeStep = recipeSteps.get(currentPosition);
 
+        // display a default image in case of an invalid video/thumbnail url
         if (playerView != null && emptyImageView != null && recipeStep != null) {
             if (recipeStep.getVideoURL() == null || TextUtils.isEmpty(recipeStep.getVideoURL())) {
                 playerView.setVisibility(View.GONE);
@@ -148,7 +158,8 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             }
         }
 
-        if (isTwoPane) {
+        // display recipe description, current step count and total steps
+        if (isTwoPane && recipeStep != null) {
             if (recipeStepDesc != null) {
                 recipeStepDesc.setText(recipeStep.getDescription());
             }
@@ -158,6 +169,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             uri = Uri.parse(recipeStep.getVideoURL());
             initializePlayer();
         } else {
+            // handle intent for mobile screens to display video in a new screen
             Intent intent = new Intent(this, RecipeStepDetailActivity.class);
             intent.putExtra("recipe_id", id);
             intent.putExtra("recipe_step", recipeStep);
@@ -169,6 +181,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
 
     private void initializePlayer() {
 
+        // initialize player
         if (player == null) {
             player = ExoPlayerFactory.newSimpleInstance(this,
                     new DefaultRenderersFactory(this),
@@ -180,6 +193,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             playerView.setPlayer(player);
         }
 
+        // define media source and set up the player
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource);
         player.setPlayWhenReady(playWhenReady);
@@ -229,6 +243,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
         }
     }
 
+    // release player when no longer in use
     private void releasePlayer() {
         if (isTwoPane && player != null) {
             playbackPosition = player.getCurrentPosition();
@@ -252,6 +267,8 @@ public class RecipeStepListActivity extends AppCompatActivity implements OnItemC
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
+
+            // save player state
             outState.putBoolean("play_when_ready", playWhenReady);
             outState.putInt("current_window", currentWindow);
             outState.putLong("playback_position", playbackPosition);

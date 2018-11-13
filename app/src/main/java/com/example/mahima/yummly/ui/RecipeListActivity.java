@@ -1,25 +1,23 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.ui;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+
+import com.example.mahima.yummly.R;
+import com.example.mahima.yummly.adapter.RecipeListAdapter;
+import com.example.mahima.yummly.utils.Utils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.mahima.yummly.Constants.GRID_LAYOUT;
-import static com.example.mahima.yummly.Constants.VERTICAL_LINEAR_LAYOUT;
+import static com.example.mahima.yummly.utils.Constants.GRID_LAYOUT;
+import static com.example.mahima.yummly.utils.Constants.VERTICAL_LINEAR_LAYOUT;
 
 public class RecipeListActivity extends AppCompatActivity {
 
     @BindView(R.id.recipe_recycler_view)
     RecyclerView recyclerView;
-    @BindView(R.id.empty_text_view)
-    TextView emptyTextView;
-    @BindView(R.id.progress_bar)
-    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +26,7 @@ public class RecipeListActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        // set up recycler view
         if (Utils.isTablet(this) || Utils.isInLandscape(this)) {
             Utils.setUpRecyclerView(this, recyclerView, GRID_LAYOUT);
         } else {

@@ -1,4 +1,4 @@
-package com.example.mahima.yummly;
+package com.example.mahima.yummly.ui;
 
 
 import android.net.Uri;
@@ -9,16 +9,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.mahima.yummly.R;
+import com.example.mahima.yummly.model.Recipe;
+import com.example.mahima.yummly.model.RecipeStep;
+import com.example.mahima.yummly.utils.Utils;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -30,12 +32,14 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.Objects;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Optional;
 
-import static com.example.mahima.yummly.Constants.LOG_TAG;
+import static com.example.mahima.yummly.utils.Constants.LOG_TAG;
 
 
 /**
@@ -78,6 +82,7 @@ public class RecipeStepDetailFragment extends Fragment {
     public static RecipeStepDetailFragment newInstance(int id, RecipeStep recipeStep, int position, int count) {
         RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
         Bundle args = new Bundle();
+        // save recipe details into fragment
         args.putInt("recipe_id", id);
         args.putParcelable("recipe_step", recipeStep);
         args.putInt("recipe_step_position", position);
@@ -90,6 +95,7 @@ public class RecipeStepDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // restore saved state if any
         if (savedInstanceState != null) {
             playWhenReady = savedInstanceState.getBoolean("play_when_ready");
             currentWindow = savedInstanceState.getInt("current_window");
@@ -110,14 +116,17 @@ public class RecipeStepDetailFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
+        // retrieve recipe details saved as fragment arguments
         if (getArguments() != null) {
             id = getArguments().getInt("recipe_id");
             recipeStep = getArguments().getParcelable("recipe_step");
             count = getArguments().getInt("recipe_steps_count");
             position = getArguments().getInt("recipe_step_position");
+
             displayRecipeDetails();
         }
 
+        // retrieve saved state if any
         if (savedInstanceState != null) {
             id = savedInstanceState.getInt("recipe_id");
             position = savedInstanceState.getInt("recipe_step_position");
@@ -133,15 +142,19 @@ public class RecipeStepDetailFragment extends Fragment {
 
     private void displayRecipeDetails() {
 
-        if (position == count - 1 && nextButton != null) {
-            nextButton.setEnabled(false);
-            DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
-        }
-        if (position == 0 && prevButton != null) {
-            prevButton.setEnabled(false);
-            DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+        // disable next and previous buttons for the last and first step video
+        if (getContext() != null) {
+            if (position == count - 1 && nextButton != null) {
+                nextButton.setEnabled(false);
+                DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+            }
+            if (position == 0 && prevButton != null) {
+                prevButton.setEnabled(false);
+                DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+            }
         }
 
+        // display recipe description, current step count and total steps
         if (recipeStep != null) {
             if (recipeStepDesc != null) {
                 recipeStepDesc.setText(recipeStep.getDescription());
@@ -152,11 +165,12 @@ public class RecipeStepDetailFragment extends Fragment {
                             prevButton.setEnabled(false);
                         }
                     } else {
-                        recipeStepCount.setText(getString(R.string.recipe_step_count, position, count - 1));
+                        recipeStepCount.setText(getString(R.string.recipe_step_count, recipeStep.getId(), count - 1));
                     }
                 }
             }
 
+            // display a default image in case of an invalid video/thumbnail url
             if (recipeStep.getVideoURL() == null || TextUtils.isEmpty(recipeStep.getVideoURL())) {
                 playerView.setVisibility(View.GONE);
                 emptyImageView.setVisibility(View.VISIBLE);
@@ -188,16 +202,19 @@ public class RecipeStepDetailFragment extends Fragment {
         if (prevButton != null && nextButton != null) {
             if (position > 0 && position < count) {
                 prevButton.setEnabled(true);
+
                 position--;
                 nextButton.setEnabled(true);
-                DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.white));
+                DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(Objects.requireNonNull(getContext()), android.R.color.white));
+                // disable previous button if reached the beginning
                 if (position <= 0) {
                     prevButton.setEnabled(false);
                     DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
                 }
-                Log.d(LOG_TAG, "Position : " + position);
+                // get new recipe step after decrementing the position
                 Recipe recipe = Utils.getRecipeById(getContext(), id);
                 recipeStep = recipe.getSteps().get(position);
+                // reset video seek state
                 currentWindow = 0;
                 playbackPosition = 0;
                 displayRecipeDetails();
@@ -210,18 +227,21 @@ public class RecipeStepDetailFragment extends Fragment {
     @OnClick(R.id.next_button)
     public void displayNextStep() {
         if (nextButton != null && prevButton != null) {
-            if (position >= 0 && position < count-1) {
+            if (position >= 0 && position < count - 1) {
                 nextButton.setEnabled(true);
+
                 position++;
                 prevButton.setEnabled(true);
-                DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.white));
-                if (position >= count-1) {
+                DrawableCompat.setTint(prevButton.getDrawable(), ContextCompat.getColor(Objects.requireNonNull(getContext()), android.R.color.white));
+                // disable next button if reached the end
+                if (position >= count - 1) {
                     nextButton.setEnabled(false);
                     DrawableCompat.setTint(nextButton.getDrawable(), ContextCompat.getColor(getContext(), android.R.color.darker_gray));
                 }
-                Log.d(LOG_TAG, "Position : " + position);
+                // get new recipe step after incrementing the position
                 Recipe recipe = Utils.getRecipeById(getContext(), id);
                 recipeStep = recipe.getSteps().get(position);
+                // reset video seek state
                 currentWindow = 0;
                 playbackPosition = 0;
                 displayRecipeDetails();
@@ -232,11 +252,13 @@ public class RecipeStepDetailFragment extends Fragment {
 
     private void initializePlayer() {
 
+        // set step description as title for mobile screens
         if (getActivity() != null && recipeStep != null) {
             getActivity().setTitle(recipeStep.getShortDescription());
         }
 
-        if (player == null){
+        // initialize player
+        if (player == null) {
             player = ExoPlayerFactory.newSimpleInstance(getContext(),
                     new DefaultRenderersFactory(getContext()),
                     new DefaultTrackSelector(),
@@ -245,6 +267,7 @@ public class RecipeStepDetailFragment extends Fragment {
 
         playerView.setPlayer(player);
 
+        // define media source and set up the player
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource);
         player.setPlayWhenReady(playWhenReady);
@@ -265,7 +288,6 @@ public class RecipeStepDetailFragment extends Fragment {
             initializePlayer();
         }
     }
-
 
 
     @Override
@@ -292,6 +314,7 @@ public class RecipeStepDetailFragment extends Fragment {
         }
     }
 
+    // release player when no longer in use
     private void releasePlayer() {
         if (player != null) {
             playbackPosition = player.getCurrentPosition();
@@ -309,6 +332,8 @@ public class RecipeStepDetailFragment extends Fragment {
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
+
+            // save player state and current recipe step position
             outState.putBoolean("play_when_ready", playWhenReady);
             outState.putInt("current_window", currentWindow);
             outState.putLong("playback_position", playbackPosition);
